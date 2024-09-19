@@ -4,10 +4,12 @@ import Button from "../components/Button";
 import { login } from "../services/authService";
 
 const Login = () => {
-    const [userCredentials, setUserCredentials] = useState({
+    const initialUserCredentials = {
         email: "",
         password: ""
-    });
+    }; 
+
+    const [userCredentials, setUserCredentials] = useState(initialUserCredentials);
     const [error, setError] = useState<string|null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,14 +25,15 @@ const Login = () => {
         setError(null);
         try {
             const token = await login(userCredentials);
+            setUserCredentials(initialUserCredentials);
             localStorage.setItem('authToken', token);
         } catch (error) {
             if(error instanceof Error) {
                 setError(error.message);
             }
         }
-
     }
+    
     return (
         <div className='w-full flex-1 flex flex-col items-center justify-center'>
             <p className="font-display text-5xl text-offWhite uppercase">
