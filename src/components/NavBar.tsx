@@ -9,7 +9,7 @@ const NavBar = () => {
             </p>
 
             <div className='w-[30px] h-30 rounded-full overflow-hidden'>
-                <img src="src/assets/test-profile.jpg" alt="profile-picture" className='w-full h-full object-cover' />
+                <img src="/assets/test-profile.jpg" alt="profile-picture" className='w-full h-full object-cover' />
             </div>
         </div>
     )
