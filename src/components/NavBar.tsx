@@ -8,8 +8,9 @@ const NavBar = () => {
                 <span className='text-3xl'>IP</span>
             </p>
 
-            <div className='w-[30px] h-30 rounded-full overflow-hidden'>
+            <div className='relative w-[30px] h-30 rounded-full overflow-hidden'>
                 <img src="/assets/test-profile.jpg" alt="profile-picture" className='w-full h-full object-cover' />
+                <div className="absolute inset-0 bg-darkTeal rounded-full mix-blend-hue"></div>
             </div>
         </div>
     )
