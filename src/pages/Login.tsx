@@ -26,7 +26,7 @@ const Login = () => {
         e.preventDefault();
         setError(null);
         if(validationError.email || validationError.password) return;
-        
+
         try {
             const token = await login(userCredentials);
             setUserCredentials(initialUserCredentials);
@@ -69,6 +69,7 @@ const Login = () => {
                     name="email"
                     value={userCredentials.email}
                     onChange={handleInputChange}
+                    maxLength={40}
                     onBlur={handleOnBlurValidation}
                 />
                 {validationError.email && <p className="font-display text-red-300 mt-2">{validationError.email}</p>}
@@ -78,6 +79,7 @@ const Login = () => {
                     name="password"
                     value={userCredentials.password}
                     onChange={handleInputChange}
+                    maxLength={12}
                     // onBlur={handleOnBlurValidation}
                 />
                 {validationError.password && <p className="font-display text-red-300 mt-2">{validationError.password}</p>}
