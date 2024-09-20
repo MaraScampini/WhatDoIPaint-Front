@@ -10,7 +10,8 @@ interface User {
 interface UserState {
     user: User | null,
     roles: string[] | null,
-    fetchUser: (token:string) => Promise<void>
+    fetchUser: (token: string) => Promise<void>,
+    logout: () => void;
 }
 
 const API_URL = import.meta.env.VITE_API_PROD_URL;
@@ -25,7 +26,13 @@ const useUserStore = create<UserState>((set) => ({
             }
         });
         const data: User = res.data;
-        set({user: data, roles: data.roles})
+        set({ user: data, roles: data.roles })
+        localStorage.setItem('user', JSON.stringify(data));
+    },
+    logout: () => {
+        set({ user: null, roles: null });
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
     }
 }))
 

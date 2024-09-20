@@ -1,6 +1,13 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom'
 
 const Landing = () => {
+  const token = localStorage.getItem('authToken');
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (token) { navigate('/feed') };
+  }, [token, navigate]);
+
   return (
     <div className='w-full flex-1 flex flex-col px-20 py-10'>
       <p className='font-display text-4xl'>
