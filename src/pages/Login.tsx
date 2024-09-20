@@ -5,7 +5,8 @@ import { login } from "../services/authService";
 import PasswordInput from "../components/PasswordInput";
 import useFormValidation from "../hooks/useFormValidation";
 import { validateEmail, validatePassword } from "../services/validationService";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useUserStore from "../store/useUserStore";
 
 const Login = () => {
     const initialUserCredentials = {
@@ -19,6 +20,8 @@ const Login = () => {
     }
 
     let { formValues, validationError, resetForm, handleInputChange, handleOnBlurValidation } = useFormValidation(initialUserCredentials, validationRules);
+    const fetchUser = useUserStore((state) => state.fetchUser);
+    const navigate = useNavigate();
 
     const [error, setError] = useState<string | null>(null);
 
@@ -31,6 +34,8 @@ const Login = () => {
             const token = await login(formValues);
             resetForm();
             localStorage.setItem('authToken', token);
+            await fetchUser(token);
+            navigate('/feed');
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);

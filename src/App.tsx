@@ -3,6 +3,7 @@ import Landing from "./pages/Landing"
 import NavBar from "./components/NavBar"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import Feed from "./pages/Feed"
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/feed" element={<Feed />}/>
         </Routes>
       </BrowserRouter>
     </div>
