@@ -21,7 +21,7 @@ const PasswordInput = ({ name, placeholder, value, onChange, onBlur, maxLength }
             <p className="font-display text-lightTeal uppercase font-light pb-1">{name}</p>
             <input
                 className='font-display text-offWhite lowercase bg-darkGrey h-10 rounded-md px-3 w-full'
-                type={showPassword ? "text" : "password"}  // Toggle between "text" and "password"
+                type={showPassword ? "text" : "password"}
                 name={name}
                 placeholder={placeholder}
                 value={value}

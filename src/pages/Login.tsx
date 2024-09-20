@@ -2,8 +2,9 @@ import { useState } from "react"
 import Input from "../components/Input"
 import Button from "../components/Button";
 import { login } from "../services/authService";
-import { validateEmail, validatePassword } from "../services/validationService";
 import PasswordInput from "../components/PasswordInput";
+import useFormValidation from "../hooks/useFormValidation";
+import { validateEmail, validatePassword } from "../services/validationService";
 
 const Login = () => {
     const initialUserCredentials = {
@@ -11,51 +12,28 @@ const Login = () => {
         password: ""
     };
 
-    const [userCredentials, setUserCredentials] = useState(initialUserCredentials);
-    const [error, setError] = useState<string | null>(null);
-    const [validationError, setValidationError] = useState<{ email?: string | null, password?: string | null }>({})
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setUserCredentials(prevState => ({
-            ...prevState,
-            [name]: value
-        }))
+    const validationRules = {
+        email: validateEmail,
+        password: validatePassword
     }
+
+    let { formValues, validationError, resetForm, handleInputChange, handleOnBlurValidation } = useFormValidation(initialUserCredentials, validationRules);
+
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmitLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        if(validationError.email || validationError.password) return;
+        if (validationError.email || validationError.password) return;
 
         try {
-            const token = await login(userCredentials);
-            setUserCredentials(initialUserCredentials);
+            const token = await login(formValues);
+            resetForm();
             localStorage.setItem('authToken', token);
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
             }
-        }
-    }
-
-    const handleOnBlurValidation = (e: React.FocusEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-
-        if (name === 'email') {
-            const emailError = validateEmail(value);
-            setValidationError(prevState => ({
-                ...prevState,
-                email: emailError
-            }));
-        }
-
-        if (name === 'password') {
-            const passwordError = validatePassword(value);
-            setValidationError(prevState => ({
-                ...prevState,
-                password: passwordError
-            }));
         }
     }
 
@@ -68,7 +46,7 @@ const Login = () => {
                 <Input
                     type="email"
                     name="email"
-                    value={userCredentials.email}
+                    value={formValues.email}
                     onChange={handleInputChange}
                     maxLength={40}
                     onBlur={handleOnBlurValidation}
@@ -77,10 +55,10 @@ const Login = () => {
 
                 <PasswordInput
                     name="password"
-                    value={userCredentials.password}
+                    value={formValues.password}
                     onChange={handleInputChange}
                     maxLength={12}
-                    // onBlur={handleOnBlurValidation}
+                // onBlur={handleOnBlurValidation}
                 />
                 {validationError.password && <p className="font-display text-red-300 mt-2">{validationError.password}</p>}
 
