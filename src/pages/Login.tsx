@@ -3,6 +3,7 @@ import Input from "../components/Input"
 import Button from "../components/Button";
 import { login } from "../services/authService";
 import { validateEmail, validatePassword } from "../services/validationService";
+import PasswordInput from "../components/PasswordInput";
 
 const Login = () => {
     const initialUserCredentials = {
@@ -74,8 +75,7 @@ const Login = () => {
                 />
                 {validationError.email && <p className="font-display text-red-300 mt-2">{validationError.email}</p>}
 
-                <Input
-                    type="password"
+                <PasswordInput
                     name="password"
                     value={userCredentials.password}
                     onChange={handleInputChange}
