@@ -13,7 +13,7 @@ const Input = ({ type, name, placeholder, value, onChange, maxLength, onBlur } :
         <div className="w-full py-3">
             <p className="font-display text-lightTeal uppercase font-light pb-1">{name}</p>
             <input
-                className='font-display text-offWhite lowercase bg-darkGrey h-10 rounded-md px-3 w-full'
+                className='font-display text-offWhite bg-darkGrey h-10 rounded-md px-3 w-full'
                 type={type}
                 name={name}
                 placeholder={placeholder}

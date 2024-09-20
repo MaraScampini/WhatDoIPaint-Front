@@ -5,6 +5,7 @@ import { login } from "../services/authService";
 import PasswordInput from "../components/PasswordInput";
 import useFormValidation from "../hooks/useFormValidation";
 import { validateEmail, validatePassword } from "../services/validationService";
+import { Link } from "react-router-dom";
 
 const Login = () => {
     const initialUserCredentials = {
@@ -67,7 +68,9 @@ const Login = () => {
             </form>
             <p className="font-display text-sm uppercase pt-10">
                 <span className="text-offWhite">Are you new? </span>
-                <span className="text-lightTeal underline">Register</span>
+                <Link to={'/register'}>
+                    <span className="text-lightTeal underline">Register</span>
+                </Link>
             </p>
         </div>
     )
