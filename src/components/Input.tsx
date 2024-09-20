@@ -3,10 +3,11 @@ interface InputProps {
     name: string,
     placeholder?: string,
     value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 }
 
-const Input = ({ type, name, placeholder, value, onChange } : InputProps) => {
+const Input = ({ type, name, placeholder, value, onChange, onBlur } : InputProps) => {
     return (
         <div className="w-full py-3">
             <p className="font-display text-lightTeal uppercase font-light pb-1">{name}</p>
@@ -17,6 +18,7 @@ const Input = ({ type, name, placeholder, value, onChange } : InputProps) => {
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
+                onBlur={onBlur}
             />
         </div>
     )
