@@ -39,14 +39,38 @@ const Feed = () => {
         logout();
         navigate('/');
     }
+
+    const handleAddUpdate = () => {
+        // TODO
+        console.log('Painted today!')
+    }
+
     return (
         <div>
             <p className='text-offWhite'>{user?.username}</p>
 
             {userProjects.length > 0 ? (
-                userProjects.map((project) => (
-                    <p key={project.id}>{project.name}</p>
-                ))
+                <div className='flex ms-10 space-x-5'>
+                    {userProjects.map((project) => (
+                        <div
+                            key={project.id}
+                            className='w-1/4 aspect-square bg-cover bg-center rounded-xl relative'
+                            style={{ backgroundImage: `url(${project.image})` }}
+                        >
+                            <div className='absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-1/6 flex items-end justify-between rounded-xl'>
+                                <p className='text-offWhite font-display ps-3 pb-1' >{project.name}</p>
+                                <button
+                                    onClick={handleAddUpdate}
+                                    className='text-lightTeal pb-1 pe-1'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : (
                 <p>Add your first project to begin!</p>
             )}
