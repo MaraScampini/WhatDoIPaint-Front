@@ -1,5 +1,5 @@
-import axios from "axios"
 import { create } from "zustand"
+import { getMyInformation } from "../services/authService";
 
 interface User {
     username: string,
@@ -14,20 +14,12 @@ interface UserState {
     logout: () => void;
 }
 
-const API_URL = import.meta.env.VITE_API_PROD_URL;
-
 const useUserStore = create<UserState>((set) => ({
     user: null,
     roles: null,
     fetchUser: async (token) => {
-        const res = await axios.get(`${API_URL}/api/me`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        const data: User = res.data;
+        const data: User = await getMyInformation(token);
         set({ user: data, roles: data.roles })
-        localStorage.setItem('user', JSON.stringify(data));
     },
     logout: () => {
         set({ user: null, roles: null });

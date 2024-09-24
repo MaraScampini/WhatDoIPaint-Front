@@ -9,12 +9,12 @@ interface LoginCredentials {
     password: string
 };
 
-export const login = async (credentials : LoginCredentials) => {
+export const login = async (credentials: LoginCredentials) => {
     try {
         let res = await axios.post(`${API_URL}/api/login`, credentials);
         return res.data;
     } catch (error) {
-        if(axios.isAxiosError(error)){
+        if (axios.isAxiosError(error)) {
             const errorMessage = error.response?.data;
             throw new Error(errorMessage);
         } else {
@@ -31,14 +31,38 @@ interface UserData {
     password: string
 }
 
-export const register = async (userData : UserData) => {
+export const register = async (userData: UserData) => {
     try {
         let res = await axios.post(`${API_URL}/auth/register`, userData);
         return res.data;
     } catch (error) {
-        if(axios.isAxiosError(error)) {
+        if (axios.isAxiosError(error)) {
             const errorMessage = error.response?.data;
             throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
+
+// ME
+
+export const getMyInformation = async (token: string) => {
+    try {
+        const res = await axios.get(`${API_URL}/api/me`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        localStorage.setItem('user', JSON.stringify(res.data));
+
+        return res.data
+    } catch (error) {
+        if(axios.isAxiosError(error) && error.response){
+            if(error.response.status === 401){
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+            }
         } else {
             throw new Error('Unknown error');
         }
