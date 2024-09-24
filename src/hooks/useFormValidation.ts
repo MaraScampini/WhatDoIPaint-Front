@@ -4,7 +4,7 @@ type ValidationRules<T> = {
     [K in keyof T]?: (value: string) => string | null;
 }
 
-const useFormValidation = <T extends { [key: string]: any }>(initialState: T, validationRules: ValidationRules<T>) => {
+const useFormValidation = <T extends { [key: string]: any }>(initialState: T, validationRules?: ValidationRules<T>) => {
     const [formValues, setFormValues] = useState<T>(initialState);
     const [validationError, setValidationError] = useState<Partial<{ [K in keyof T]: string | null }>>({});
 
@@ -26,8 +26,8 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
     const handleOnBlurValidation = (e: React.FocusEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
 
-        if(validationRules[name as keyof T]) {
-            const validationFunction = validationRules[name as keyof T];
+        if(validationRules![name as keyof T]) {
+            const validationFunction = validationRules![name as keyof T];
             if(validationFunction) {
                 const error = validationFunction(value);
                 setValidationError(prevState => ({
