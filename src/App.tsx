@@ -5,6 +5,8 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Feed from "./pages/Feed"
 import ErrorTooltip from "./components/ErrorTooltip"
+import AddProject from "./pages/AddProject"
+import HelpMeChoose from "./pages/HelpMeChoose"
 
 function App() {
 
@@ -16,7 +18,9 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/feed" element={<Feed />}/>
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/create" element={<AddProject />} />
+          <Route path="/help-me-choose" element={<HelpMeChoose />} />
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />

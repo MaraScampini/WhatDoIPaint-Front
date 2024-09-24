@@ -3,6 +3,7 @@ import useUserStore from '../store/useUserStore'
 import { useEffect, useState } from 'react';
 import { getProjectsByUser, togglePriority } from '../services/projectService';
 import useErrorStore from '../store/useErrorStore';
+import AddProjectButton from '../components/AddProjectButton';
 
 type Project = {
     id: number,
@@ -109,6 +110,7 @@ const Feed = () => {
             )}
 
             <button className='text-offWhite' onClick={handleLogout}>Logout</button>
+            <AddProjectButton/>
         </div>
     )
 }
