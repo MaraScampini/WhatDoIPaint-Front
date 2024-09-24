@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Feed from "./pages/Feed"
+import ErrorTooltip from "./components/ErrorTooltip"
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/feed" element={<Feed />}/>
         </Routes>
       </BrowserRouter>
+      <ErrorTooltip />
     </div>
   )
 }

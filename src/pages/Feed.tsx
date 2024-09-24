@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import useUserStore from '../store/useUserStore'
 import { useEffect, useState } from 'react';
 import { getProjectsByUser, togglePriority } from '../services/projectService';
+import useErrorStore from '../store/useErrorStore';
 
 type Project = {
     id: number,
@@ -46,15 +47,13 @@ const Feed = () => {
     }
 
     const handleTogglePriority = async (projectId: number) => {
-        // TODO
-        console.log('Toggle priority')
         try {
             await togglePriority(token!, projectId);
             const userProjects = await getProjectsByUser(token!);
             setUserProjects(userProjects);
         } catch (error) {
             if (error instanceof Error) {
-
+                useErrorStore.getState().setError(error.message);
             }
         }
     }
