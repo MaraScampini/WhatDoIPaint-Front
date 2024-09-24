@@ -4,17 +4,24 @@ type ValidationRules<T> = {
     [K in keyof T]?: (value: string) => string | null;
 }
 
-const useFormValidation = <T extends { [key: string]: string }>(initialState: T, validationRules: ValidationRules<T>) => {
+const useFormValidation = <T extends { [key: string]: any }>(initialState: T, validationRules: ValidationRules<T>) => {
     const [formValues, setFormValues] = useState<T>(initialState);
     const [validationError, setValidationError] = useState<Partial<{ [K in keyof T]: string | null }>>({});
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>|React.ChangeEvent<HTMLTextAreaElement>|React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormValues(prevState => ({
             ...prevState,
             [name]: value
         }));
     }
+
+    const handleSelectorChange = (name: string, value: number) => {
+        setFormValues(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     const handleOnBlurValidation = (e: React.FocusEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -41,7 +48,8 @@ const useFormValidation = <T extends { [key: string]: string }>(initialState: T,
         validationError,
         resetForm,
         handleInputChange,
-        handleOnBlurValidation
+        handleOnBlurValidation,
+        handleSelectorChange
     };
 };
 
