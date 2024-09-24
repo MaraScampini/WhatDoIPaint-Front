@@ -24,9 +24,9 @@ export const getProjectsByUser = async (token: string) => {
 
 // TOGGLE PROJECT PRIORITY
 
-export const togglePriority = async (token: string, projectId: number) => {
+export const togglePriority = async (token: string, userProjectId: number) => {
     try {
-        let res = await axios.put(`${API_URL}/api/project/toggle/${projectId}`, {}, headers(token));
+        let res = await axios.put(`${API_URL}/api/project/toggle/${userProjectId}`, {}, headers(token));
         return res.data;
     } catch (error) {
         if(axios.isAxiosError(error)) {
