@@ -1,7 +1,13 @@
 import { useState } from "react"
+import { MultiValue, SingleValue } from "react-select";
 
 type ValidationRules<T> = {
     [K in keyof T]?: (value: string) => string | null;
+}
+
+interface Option {
+    id: number;
+    label: string;
 }
 
 const useFormValidation = <T extends { [key: string]: any }>(initialState: T, validationRules?: ValidationRules<T>) => {
@@ -16,10 +22,19 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
         }));
     }
 
-    const handleSelectorChange = (name: string, value: number) => {
+    const handleReactSelectChange = (name: keyof T) => (selectedOption: SingleValue<Option>) => {
+        const value = selectedOption ? selectedOption.id : 0;
         setFormValues(prevState => ({
             ...prevState,
             [name]: value
+        }));
+    };
+
+    const handleMultiSelectChange = (name: keyof T) => (selectedOptions: MultiValue<Option>) => {
+        const values = selectedOptions ? selectedOptions.map(option => option.id) : [];
+        setFormValues(prevState => ({
+            ...prevState,
+            [name]: values 
         }));
     };
 
@@ -49,7 +64,8 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
         resetForm,
         handleInputChange,
         handleOnBlurValidation,
-        handleSelectorChange
+        handleReactSelectChange,
+        handleMultiSelectChange
     };
 };
 
