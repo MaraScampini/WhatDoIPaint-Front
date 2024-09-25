@@ -5,6 +5,9 @@ import { reactSelectStyles } from "../utils/reactSelectStyles";
 import { useEffect, useRef, useState } from "react";
 import { getBrandOptions, getLevelOptions, getTechniquesOptions } from "../services/selectorService";
 import Button from '../components/Button';
+import useErrorStore from '../store/useErrorStore';
+import { createProject } from '../services/projectService';
+import { useNavigate } from 'react-router-dom';
 
 interface Option {
     value: number;
@@ -33,6 +36,7 @@ const AddProject = () => {
         priority: false
     };
     const token = localStorage.getItem('authToken');
+    const navigate = useNavigate();
 
     const [levelOptions, setLevelOptions] = useState<Option[]>([]);
     const [brandOptions, setBrandOptions] = useState<Option[]>([]);
@@ -64,10 +68,23 @@ const AddProject = () => {
 
     let { formValues, handleInputChange, handleReactSelectChange, handleMultiSelectChange, handleImageDrop, handleDragOver, handleFileSelect, handleDeleteImage } = useFormValidation(initialProjectData);
 
+    const handleSubmitProject = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await createProject(token!, formValues);
+            navigate('/feed');
+        } catch (error) {
+            if (error instanceof Error) {
+                useErrorStore.getState().setError(error.message);
+                console.log(error.message);
+            }
+        }
+    }
+
     return (
         <div className="text-offWhite flex flex-col ms-10 ml-10">
             <div className="font-display text-3xl font-semibold">New Project</div>
-            <form className="w-full flex flex-col">
+            <form onSubmit={handleSubmitProject} className="w-full flex flex-col">
                 <div className='w-full flex flex-col'>
                     <div className='flex w-full justify-between'>
                         <div className='flex flex-col w-2/4'>
