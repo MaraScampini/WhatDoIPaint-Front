@@ -10,12 +10,14 @@ import { createProject } from '../services/projectService';
 import { useNavigate } from 'react-router-dom';
 import { validateAddProjectForm } from '../services/validationService';
 
+// SELECTOR OPTIONS RECEIVED FROM THE API
 interface Option {
     value: number;
     label: string;
     id: number;
 }
 
+// PROJECT DATA OBJECT TO SEND TO THE API
 interface ProjectData {
     name: string;
     description?: string;
@@ -26,6 +28,7 @@ interface ProjectData {
     priority: boolean;
 }
 
+// ERRORS OBJECT FORMED ON SUBMIT
 interface formErrors {
     name?: string,
     level?: string,
@@ -33,6 +36,7 @@ interface formErrors {
 }
 
 const AddProject = () => {
+    // INITIAL DATA AND STATES
     const initialProjectData: ProjectData = {
         name: "",
         level: 0,
@@ -47,6 +51,7 @@ const AddProject = () => {
     const [techniqueOptions, setTechniqueOptions] = useState<Option[]>([]);
     const [formErrors, setFormErrors] = useState<formErrors>({});
 
+    // LOAD SELECTORS
     useEffect(() => {
         const loadSelectors = async () => {
             if (token) {
@@ -61,6 +66,7 @@ const AddProject = () => {
         loadSelectors();
     }, [])
 
+    // HANDLE INPUT ELEMENT TO UPLOAD IMAGES CLICKING ON IT
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleClick = () => {
@@ -72,6 +78,7 @@ const AddProject = () => {
 
     let { formValues, handleInputChange, handleReactSelectChange, handleMultiSelectChange, handleImageDrop, handleDragOver, handleFileSelect, handleDeleteImage } = useFormValidation(initialProjectData);
 
+    // HANDLE SUBMIT PROJECT AND CONTROL EVERYTHING IS CORRECT BEFORE
     const handleSubmitProject = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormErrors({});
@@ -86,7 +93,6 @@ const AddProject = () => {
         } catch (error) {
             if (error instanceof Error) {
                 useErrorStore.getState().setError(error.message);
-                console.log(error.message);
             }
         }
     }
