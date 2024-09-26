@@ -66,6 +66,7 @@ const AddProject = () => {
     const handleClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
+            fileInputRef.current.value = "";
         }
     };
 
