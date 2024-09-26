@@ -8,6 +8,7 @@ import Button from '../components/Button';
 import useErrorStore from '../store/useErrorStore';
 import { createProject } from '../services/projectService';
 import { useNavigate } from 'react-router-dom';
+import { validateAddProjectForm } from '../services/validationService';
 
 interface Option {
     value: number;
@@ -17,22 +18,25 @@ interface Option {
 
 interface ProjectData {
     name: string;
-    description: string;
+    description?: string;
     level: number;
     brand: number;
-    techniques: number[];
-    image: string;
+    techniques?: number[];
+    image?: string;
     priority: boolean;
+}
+
+interface formErrors {
+    name?: string,
+    level?: string,
+    brand?: string
 }
 
 const AddProject = () => {
     const initialProjectData: ProjectData = {
         name: "",
-        description: "",
         level: 0,
         brand: 0,
-        techniques: [],
-        image: "",
         priority: false
     };
     const token = localStorage.getItem('authToken');
@@ -41,8 +45,7 @@ const AddProject = () => {
     const [levelOptions, setLevelOptions] = useState<Option[]>([]);
     const [brandOptions, setBrandOptions] = useState<Option[]>([]);
     const [techniqueOptions, setTechniqueOptions] = useState<Option[]>([]);
-
-
+    const [formErrors, setFormErrors] = useState<formErrors>({});
 
     useEffect(() => {
         const loadSelectors = async () => {
@@ -70,6 +73,12 @@ const AddProject = () => {
 
     const handleSubmitProject = async (e: React.FormEvent) => {
         e.preventDefault();
+        setFormErrors({});
+        const errors = validateAddProjectForm(formValues);
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
+            return;
+        }
         try {
             await createProject(token!, formValues);
             navigate('/feed');
@@ -96,6 +105,7 @@ const AddProject = () => {
                                     onChange={handleInputChange}
                                 />
                             </div>
+                            {formErrors.name && <p className='text-red-400 text-sm font-display uppercase'>{formErrors.name}</p>}
                             <div className="w-full py-3">
                                 <p className="font-display text-lightTeal uppercase font-light pb-1">Description</p>
                                 <textarea
@@ -150,6 +160,7 @@ const AddProject = () => {
                                 classNames={reactSelectStyles}
                                 isClearable
                             />
+                            {formErrors.level && <p className='text-red-400 text-sm font-display uppercase mt-2'>{formErrors.level}</p>}
                         </div>
 
                         <div className="w-1/5">
@@ -162,6 +173,7 @@ const AddProject = () => {
                                 classNames={reactSelectStyles}
                                 isClearable
                             />
+                            {formErrors.brand && <p className='text-red-400 text-sm font-display uppercase mt-2'>{formErrors.brand}</p>}
                         </div>
 
                         <div className="w-1/5">
@@ -171,7 +183,7 @@ const AddProject = () => {
                                 closeMenuOnSelect={false}
                                 options={techniqueOptions}
                                 onChange={handleMultiSelectChange('techniques')}
-                                value={techniqueOptions.filter(option => formValues.techniques.includes(option.id))}
+                                value={techniqueOptions.filter(option => formValues.techniques?.includes(option.id))}
                                 unstyled
                                 classNames={reactSelectStyles}
                             />

@@ -54,7 +54,7 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
                 const base64String = reader.result as string;
                 setFormValues(prevState => ({
                     ...prevState,
-                    [name]: base64String // Update the image field
+                    [name]: base64String 
                 }));
             };
             reader.readAsDataURL(file);
@@ -63,12 +63,12 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
 
     const handleImageDrop = (name: keyof T) => (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
-        const file = event.dataTransfer.files[0]; // Get the first file
+        const file = event.dataTransfer.files[0]; 
         handleFile(file, name);
     };
 
     const handleFileSelect = (name: keyof T) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]; // Get the first selected file
+        const file = event.target.files?.[0]; 
         handleFile(file!, name);
     };
 

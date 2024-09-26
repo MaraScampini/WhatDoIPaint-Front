@@ -65,11 +65,11 @@ const Feed = () => {
             <p className='text-offWhite'>{user?.username}</p>
 
             {userProjects.length > 0 ? (
-                <div className='flex ms-10 space-x-5'>
+                <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap'>
                     {userProjects.map((project) => (
                         <div
                             key={project.id}
-                            className='w-1/6 aspect-square bg-cover bg-center rounded-xl relative transition-all duration-300 ease-in-out hover:outline hover:outline-lightTeal hover:outline-1 hover:cursor-pointer'
+                            className='lg:w-1/6 md:w-1/4 sm:w-1/3 aspect-square bg-cover bg-center rounded-xl relative transition-all duration-300 ease-in-out hover:outline hover:outline-lightTeal hover:outline-1 hover:cursor-pointer'
                             style={{ backgroundImage: `url(${project.image})` }}
                         >
                             <button onClick={() => handleTogglePriority(project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
