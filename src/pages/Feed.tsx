@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '../store/useUserStore'
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { getProjectsByUser, togglePriority } from '../services/projectService';
 import useErrorStore from '../store/useErrorStore';
 import AddProjectButton from '../components/AddProjectButton';
+import { useQuery } from '@tanstack/react-query';
 
 type Project = {
     id: number,
@@ -18,25 +19,31 @@ const Feed = () => {
     const user = useUserStore((state) => state.user);
     const logout = useUserStore((state) => state.logout);
     const fetchUser = useUserStore((state) => state.fetchUser);
+    const setError = useErrorStore((state) => state.setError);
     const navigate = useNavigate();
 
-    const [userProjects, setUserProjects] = useState<Project[]>([]);
 
     useEffect(() => {
         const loadUser = async () => {
-            if (token) {
-                if (!user) {
+            if (token && !user) {
+                try {
                     await fetchUser(token, navigate);
                 }
-                const userProjects = await getProjectsByUser(token);
-                setUserProjects(userProjects);
-            } else {
-                navigate('/login');
+                catch (error) {
+                    navigate('/login');
+                }
             }
         }
         loadUser();
-    }, []);
+    }, [token, user, fetchUser, navigate]);
 
+    const { data: userProjects = [], error, refetch } = useQuery<Project[]>({
+        queryKey: ['projectsByUser', user?.username],
+        queryFn: () => getProjectsByUser(token!),
+        enabled: !!user,
+    })
+
+    if (error) setError(error.message);
 
     const handleLogout = () => {
         logout();
@@ -51,13 +58,16 @@ const Feed = () => {
     const handleTogglePriority = async (userProjectId: number) => {
         try {
             await togglePriority(token!, userProjectId);
-            const userProjects = await getProjectsByUser(token!);
-            setUserProjects(userProjects);
+            refetch();
         } catch (error) {
             if (error instanceof Error) {
-                useErrorStore.getState().setError(error.message);
+                setError(error.message);
             }
         }
+    }
+
+    const handleGoToProject = async (projectId: number) => {
+        navigate(`/project/${projectId}`);
     }
 
     return (
@@ -71,6 +81,7 @@ const Feed = () => {
                             key={project.id}
                             className='lg:w-1/6 md:w-1/4 sm:w-1/3 aspect-square bg-cover bg-center rounded-xl relative transition-all duration-300 ease-in-out hover:outline hover:outline-lightTeal hover:outline-1 hover:cursor-pointer'
                             style={{ backgroundImage: `url(${project.image})` }}
+                            onClick={() => handleGoToProject(project.id)}
                         >
                             <button onClick={() => handleTogglePriority(project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
                                 {project.priority ? (
@@ -110,7 +121,7 @@ const Feed = () => {
             )}
 
             <button className='text-offWhite' onClick={handleLogout}>Logout</button>
-            <AddProjectButton/>
+            <AddProjectButton />
         </div>
     )
 }

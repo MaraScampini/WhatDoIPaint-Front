@@ -7,6 +7,7 @@ import Feed from "./pages/Feed"
 import ErrorTooltip from "./components/ErrorTooltip"
 import AddProject from "./pages/AddProject"
 import HelpMeChoose from "./pages/HelpMeChoose"
+import ProjectFeed from "./pages/ProjectFeed"
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/feed" element={<Feed />} />
           <Route path="/create" element={<AddProject />} />
           <Route path="/help-me-choose" element={<HelpMeChoose />} />
+          <Route path="/project/:projectId" element={<ProjectFeed />}/>
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />

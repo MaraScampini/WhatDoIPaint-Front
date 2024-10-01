@@ -2,13 +2,14 @@ import Select from 'react-select';
 import Input from "../components/Input"
 import useFormValidation from "../hooks/useFormValidation";
 import { reactSelectStyles } from "../utils/reactSelectStyles";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { getBrandOptions, getLevelOptions, getTechniquesOptions } from "../services/selectorService";
 import Button from '../components/Button';
 import useErrorStore from '../store/useErrorStore';
 import { createProject } from '../services/projectService';
 import { useNavigate } from 'react-router-dom';
 import { validateAddProjectForm } from '../services/validationService';
+import { useQueries } from '@tanstack/react-query';
 
 // SELECTOR OPTIONS RECEIVED FROM THE API
 interface Option {
@@ -45,26 +46,40 @@ const AddProject = () => {
     };
     const token = localStorage.getItem('authToken');
     const navigate = useNavigate();
+    const setError = useErrorStore((state) => state.setError);
 
-    const [levelOptions, setLevelOptions] = useState<Option[]>([]);
-    const [brandOptions, setBrandOptions] = useState<Option[]>([]);
-    const [techniqueOptions, setTechniqueOptions] = useState<Option[]>([]);
     const [formErrors, setFormErrors] = useState<formErrors>({});
 
     // LOAD SELECTORS
-    useEffect(() => {
-        const loadSelectors = async () => {
-            if (token) {
-                const levels = await getLevelOptions(token);
-                setLevelOptions(levels);
-                const brands = await getBrandOptions(token);
-                setBrandOptions(brands);
-                const techniques = await getTechniquesOptions(token);
-                setTechniqueOptions(techniques);
-            }
+    const [{ data: levelOptions, error: errorLevels },
+        { data: brandOptions, error: errorBrands },
+        { data: techniqueOptions, error: errorTechniques }] = useQueries({
+            queries: [
+                {
+                    queryKey: ['levelOptions'],
+                    queryFn: () => getLevelOptions(token!),
+                    enabled: !!token,
+                },
+                {
+                    queryKey: ['brandOptions'],
+                    queryFn: () => getBrandOptions(token!),
+                    enabled: !!token,
+                },
+                {
+                    queryKey: ['techniqueOptions'],
+                    queryFn: () => getTechniquesOptions(token!),
+                    enabled: !!token,
+                },
+            ],
+        }) as [{ data: Option[] | undefined, isLoading: boolean, error: unknown },
+            { data: Option[] | undefined, isLoading: boolean, error: unknown },
+            { data: Option[] | undefined, isLoading: boolean, error: unknown }];;
+
+    [errorLevels, errorBrands, errorTechniques].map(error => {
+        if (error instanceof Error) {
+            setError(error?.message)
         }
-        loadSelectors();
-    }, [])
+    });
 
     // HANDLE INPUT ELEMENT TO UPLOAD IMAGES CLICKING ON IT
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -162,7 +177,7 @@ const AddProject = () => {
                             <Select
                                 options={levelOptions}
                                 onChange={handleReactSelectChange('level')}
-                                value={levelOptions.find(option => option.id === formValues.level)}
+                                value={levelOptions?.find(option => option.id === formValues.level)}
                                 unstyled
                                 classNames={reactSelectStyles}
                                 isClearable
@@ -175,7 +190,7 @@ const AddProject = () => {
                             <Select
                                 options={brandOptions}
                                 onChange={handleReactSelectChange('brand')}
-                                value={brandOptions.find(option => option.id === formValues.brand)}
+                                value={brandOptions?.find(option => option.id === formValues.brand)}
                                 unstyled
                                 classNames={reactSelectStyles}
                                 isClearable
@@ -190,7 +205,7 @@ const AddProject = () => {
                                 closeMenuOnSelect={false}
                                 options={techniqueOptions}
                                 onChange={handleMultiSelectChange('techniques')}
-                                value={techniqueOptions.filter(option => formValues.techniques?.includes(option.id))}
+                                value={techniqueOptions?.filter(option => formValues.techniques?.includes(option.id))}
                                 unstyled
                                 classNames={reactSelectStyles}
                             />
