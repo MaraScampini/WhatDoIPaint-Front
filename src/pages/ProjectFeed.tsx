@@ -132,9 +132,14 @@ const ProjectFeed = () => {
 
                             </div>
                             {/* PROJECT GALLERY */}
-                            <div className="text-offWhite w-3/6 flex justify-center py-3 bg-red-400">
-                                <div className="bg-red-700 w-5/6">
-                                    GALLERY
+                            <div className="text-offWhite w-3/6 flex justify-center py-3">
+                                <div className="bg-darkGrey w-5/6 flex gap-5 flex-wrap p-3 rounded-md items-start justify-center">
+                                    {projectData.gallery?.map((image, index) => (
+                                        <div key={index} className="h-[10rem] my-3 aspect-square bg-cover rounded-md"
+                                            style={{ backgroundImage: `url(${image})` }}
+                                        >
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
