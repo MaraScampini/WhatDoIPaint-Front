@@ -26,7 +26,7 @@ const Feed = () => {
         const loadUser = async () => {
             if (token) {
                 if (!user) {
-                    await fetchUser(token);
+                    await fetchUser(token, navigate);
                 }
                 const userProjects = await getProjectsByUser(token);
                 setUserProjects(userProjects);
