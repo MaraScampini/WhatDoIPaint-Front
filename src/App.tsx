@@ -8,6 +8,7 @@ import ErrorTooltip from "./components/ErrorTooltip"
 import AddProject from "./pages/AddProject"
 import HelpMeChoose from "./pages/HelpMeChoose"
 import ProjectFeed from "./pages/ProjectFeed"
+import UpdateDetail from "./pages/UpdateDetail"
 
 function App() {
 
@@ -22,7 +23,8 @@ function App() {
           <Route path="/feed" element={<Feed />} />
           <Route path="/create" element={<AddProject />} />
           <Route path="/help-me-choose" element={<HelpMeChoose />} />
-          <Route path="/project/:projectId" element={<ProjectFeed />}/>
+          <Route path="/project/:projectId" element={<ProjectFeed />} />
+          <Route path="/update/:updateId" element={<UpdateDetail />} />
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />

@@ -1,6 +1,6 @@
 import { getProjectInfoById } from "../services/projectService";
 import useErrorStore from "../store/useErrorStore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import Tag from "../components/Tag";
@@ -51,6 +51,7 @@ const ProjectFeed = () => {
     const token = localStorage.getItem('authToken');
     const setError = useErrorStore((state) => state.setError);
     const { projectId } = useParams();
+    const navigate = useNavigate();
 
     const { data: projectData, error } = useQuery<ProjectData>({
         queryKey: ['projectById', projectId],
@@ -62,6 +63,10 @@ const ProjectFeed = () => {
 
     const handleAddUpdate = () => {
         console.log('add update');
+    }
+
+    const handleGoToUpdate = (updateId: number) => {
+        navigate(`/update/${updateId}`);
     }
 
     return (
@@ -150,7 +155,7 @@ const ProjectFeed = () => {
                                 const hasContent = update.title || update.description || (update.images && update.images.length > 0) || (update.elements && update.elements.length > 0);
 
                                 return hasContent ? (
-                                    <div key={updateIndex} className="bg-darkGrey rounded-md p-5 font-display flex justify-between">
+                                    <div key={updateIndex} onClick={() => handleGoToUpdate(update.id)} className="bg-darkGrey rounded-md p-5 font-display flex justify-between hover:border hover:border-lightTeal hover:cursor-pointer transition-all duration-100">
                                         <div className="flex flex-col w-[90%]">
                                             <p className="text-2xl uppercase font-semibold">{update.title}</p>
                                             <p className="pt-3">{update.description}</p>

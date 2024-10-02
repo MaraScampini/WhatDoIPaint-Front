@@ -71,7 +71,6 @@ export const createProject = async (token: string, projectData: ProjectData) => 
 export const getProjectInfoById = async (token: string, projectId: string) => {
 
     let res = await axios.get(`${API_URL}/api/project/${projectId}`, headers(token));
-    console.log(res.data)
     return res.data;
 
 }

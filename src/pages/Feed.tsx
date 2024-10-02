@@ -66,7 +66,7 @@ const Feed = () => {
         }
     }
 
-    const handleGoToProject = async (projectId: number) => {
+    const handleGoToProject = (projectId: number) => {
         navigate(`/project/${projectId}`);
     }
 
