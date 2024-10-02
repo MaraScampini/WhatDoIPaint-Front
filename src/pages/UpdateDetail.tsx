@@ -55,7 +55,7 @@ const UpdateDetail = () => {
                             )}
                         </div>
                     </div>
-                    <div className='flex flex-wrap my-10 gap-y-10'>
+                    <div className='flex flex-wrap my-10 gap-y-10 justify-center'>
                         {updateInfo.images.map((imageUrl, index) =>
                             <div key={index} className='w-1/3 flex p-3 justify-center'>
                                 <img onClick={() => handleOpenImage(imageUrl)} className='rounded-md hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100 object-contain' src={imageUrl} />
