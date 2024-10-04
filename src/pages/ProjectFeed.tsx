@@ -60,7 +60,7 @@ const ProjectFeed = () => {
     })
 
     if (error) {
-        if(error instanceof AxiosError && error.status === 401) {
+        if (error instanceof AxiosError && error.status === 401) {
             navigate('/login');
         } else {
             setError(error.message);
@@ -69,6 +69,14 @@ const ProjectFeed = () => {
 
     const handleAddUpdate = () => {
         console.log('add update');
+    }
+
+    const handleAddElements = () => {
+        console.log('add elements');
+    }
+
+    const handleChangeCoverImage = () => {
+        console.log('change cover image');
     }
 
     const handleGoToUpdate = (updateId: number) => {
@@ -101,57 +109,63 @@ const ProjectFeed = () => {
                                         ))}
                                     </div>
                                 </div>
-                                {/* ELEMENTS TABLE */}
-                                <div className="flex flex-col mt-5 me-3 border-t border-x border-lightTeal rounded-md font-light">
-                                    {/* HEADER */}
-                                    <div className="flex bg-darkTeal text-xl uppercase text-center py-2">
-                                        <div className="w-2/6 px-3 border-l border-lightTeal">Element name</div>
-                                        <div className="w-2/6 px-3 border-l border-lightTeal">Last Update</div>
-                                        <div className="w-1/6 px-3 border-l border-lightTeal">Status</div>
-                                        <div className="w-1/6 border-l border-lightTeal">Units</div>
-                                    </div>
-
-                                    {/* BODY */}
-                                    <div className="flex flex-col font-normal">
-                                        {projectData.elements?.map((element, index) => (
-                                            <div key={index} className="flex border-b border-lightTeal py-2">
-                                                <div className="text-left w-2/6 px-3 border-lightTeal">{element.name}</div>
-                                                <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(element.lastUpdate.date).toLocaleDateString('es-ES')}</div>
-                                                <div className="w-1/6 px-3 border-l border-lightTeal">{element.status}</div>
-                                                <div className="w-1/6 px-3 border-l border-lightTeal">1</div>
+                                {projectData.elements && projectData.elements?.length > 0 ? (
+                                    <React.Fragment>
+                                        {/* ELEMENTS TABLE */}
+                                        <div className="flex flex-col mt-5 me-3 border-t border-x border-lightTeal rounded-md font-light">
+                                            {/* HEADER */}
+                                            <div className="flex bg-darkTeal text-xl uppercase text-center py-2">
+                                                <div className="w-2/6 px-3 border-l border-lightTeal">Element name</div>
+                                                <div className="w-2/6 px-3 border-l border-lightTeal">Last Update</div>
+                                                <div className="w-1/6 px-3 border-l border-lightTeal">Status</div>
+                                                <div className="w-1/6 border-l border-lightTeal">Units</div>
                                             </div>
-                                        ))}
 
-                                        {projectData.squads?.map((squad, squadIndex) => (
-                                            <React.Fragment key={squadIndex}>
-                                                <div className="flex border-b border-lightTeal py-2">
-                                                    <div className="text-left w-2/6 px-3 border-lightTeal flex justify-between">
-                                                        {squad.name}
-                                                        <Tag text="squad" />
-                                                    </div>
-                                                    <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(squad.lastUpdate.date).toLocaleDateString('es-ES')}</div>
-                                                    <div className="w-1/6 px-3 border-l border-lightTeal">...</div>
-                                                    <div className="w-1/6 px-3 border-l border-lightTeal">{squad.amount}</div>
-                                                </div>
-                                                {squad.elements?.map((element, elementIndex) => (
-                                                    <div key={elementIndex} className={`flex border-lightTeal border-b py-2 ${squadIndex === projectData.squads!.length - 1 && elementIndex === squad.elements.length - 1 ? 'rounded-b-md' : ''}`}>
-                                                        <div className="w-2/6 px-3 border-lightTeal"></div>
-                                                        <div className="w-2/6 px-3 border-l border-lightTeal"></div>
+                                            {/* BODY */}
+                                            <div className="flex flex-col font-normal">
+                                                {projectData.elements?.map((element, index) => (
+                                                    <div key={index} className="flex border-b border-lightTeal py-2">
+                                                        <div className="text-left w-2/6 px-3 border-lightTeal">{element.name}</div>
+                                                        <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(element.lastUpdate.date).toLocaleDateString('es-ES')}</div>
                                                         <div className="w-1/6 px-3 border-l border-lightTeal">{element.status}</div>
-                                                        <div className="w-1/6 px-3 border-l border-lightTeal">{element.amount}</div>
+                                                        <div className="w-1/6 px-3 border-l border-lightTeal">1</div>
                                                     </div>
                                                 ))}
-                                            </React.Fragment>
-                                        ))}
-                                    </div>
-                                </div>
+
+                                                {projectData.squads?.map((squad, squadIndex) => (
+                                                    <React.Fragment key={squadIndex}>
+                                                        <div className="flex border-b border-lightTeal py-2">
+                                                            <div className="text-left w-2/6 px-3 border-lightTeal flex justify-between">
+                                                                {squad.name}
+                                                                <Tag text="squad" />
+                                                            </div>
+                                                            <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(squad.lastUpdate.date).toLocaleDateString('es-ES')}</div>
+                                                            <div className="w-1/6 px-3 border-l border-lightTeal">...</div>
+                                                            <div className="w-1/6 px-3 border-l border-lightTeal">{squad.amount}</div>
+                                                        </div>
+                                                        {squad.elements?.map((element, elementIndex) => (
+                                                            <div key={elementIndex} className={`flex border-lightTeal border-b py-2 ${squadIndex === projectData.squads!.length - 1 && elementIndex === squad.elements.length - 1 ? 'rounded-b-md' : ''}`}>
+                                                                <div className="w-2/6 px-3 border-lightTeal"></div>
+                                                                <div className="w-2/6 px-3 border-l border-lightTeal"></div>
+                                                                <div className="w-1/6 px-3 border-l border-lightTeal">{element.status}</div>
+                                                                <div className="w-1/6 px-3 border-l border-lightTeal">{element.amount}</div>
+                                                            </div>
+                                                        ))}
+                                                    </React.Fragment>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </React.Fragment>
+                                ) : (<p className="mt-10 text-xl flex justify-center">This project has no elements yet</p>)}
+
 
                             </div>
                             {/* PROJECT GALLERY */}
-                            <div className="text-offWhite w-3/6 flex justify-center py-3">
-                                <div className="bg-darkGrey w-5/6 flex gap-5 flex-wrap p-3 rounded-md items-start justify-center">
+                            <div className="text-offWhite w-3/6 flex h-2/3 justify-center py-3">
+                                <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
                                     {projectData.gallery?.map((image, index) => (
-                                        <div onClick={() => handleOpenImage(image)} key={index} className="h-[10rem] my-3 aspect-square bg-cover rounded-md"
+                                        <div onClick={() => handleOpenImage(image)} key={index}
+                                            className={`aspect-square bg-cover rounded-md ${index === 0 ? 'col-span-2 row-span-2' : ''}`}
                                             style={{ backgroundImage: `url(${image})` }}
                                         >
                                         </div>
@@ -159,7 +173,11 @@ const ProjectFeed = () => {
                                 </div>
                             </div>
                         </div>
-                        <Button buttonType="button" text="Add update" onClick={handleAddUpdate} />
+                        <div className="flex gap-x-3">
+                            <Button buttonType="button" text="Add elements" onClick={handleAddElements} />
+                            <Button buttonType="button" text="Add update" onClick={handleAddUpdate} />
+                            <Button buttonType="button" text="change cover image" onClick={handleChangeCoverImage} />
+                        </div>
                         {/* PROJECT UPDATES */}
                         <div className="w-full flex flex-col px-12 gap-y-5 py-3">
                             {projectData.updates?.map((update, updateIndex) => {
@@ -208,7 +226,7 @@ const ProjectFeed = () => {
                     <div>error</div>
                 )
             }
-        </div>
+        </div >
     )
 }
 
