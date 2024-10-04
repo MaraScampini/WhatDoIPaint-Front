@@ -2,11 +2,12 @@ import { getProjectInfoById } from "../services/projectService";
 import useErrorStore from "../store/useErrorStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import Tag from "../components/Tag";
 import Button from "../components/Button";
 import { AxiosError } from "axios";
 import Loader from "../components/Loader";
+import { setInterceptor } from "../services/apiClient";
 
 interface ProjectData {
     brand: string,
@@ -53,6 +54,10 @@ const ProjectFeed = () => {
     const setError = useErrorStore((state) => state.setError);
     const { projectId } = useParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setInterceptor(navigate);
+    }, [navigate])
 
     const { data: projectData, error } = useQuery<ProjectData>({
         queryKey: ['projectById', projectId],
@@ -166,7 +171,7 @@ const ProjectFeed = () => {
                                 <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
                                     {projectData.gallery?.map((image, index) => (
                                         <div onClick={() => handleOpenImage(image)} key={index}
-                                            className={`aspect-square bg-cover rounded-md ${index === 0 ? 'col-span-2 row-span-2' : ''}`}
+                                            className={`aspect-square bg-cover rounded-md ${index === 0 ? 'col-span-2 row-span-2' : ''} hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
                                             style={{ backgroundImage: `url(${image})` }}
                                         >
                                         </div>

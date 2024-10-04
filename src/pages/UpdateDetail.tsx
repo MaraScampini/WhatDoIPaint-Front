@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getUpdateInfo } from '../services/updateService';
 import useErrorStore from '../store/useErrorStore';
 import Tag from '../components/Tag';
+import { useEffect } from 'react';
+import { setInterceptor } from '../services/apiClient';
 
 interface Date {
     date: string,
@@ -21,6 +23,11 @@ interface Update {
 const UpdateDetail = () => {
     const setError = useErrorStore((state) => state.setError);
     const { updateId } = useParams();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setInterceptor(navigate);
+    }, [navigate])
 
     const { data: updateInfo, error } = useQuery<Update>({
         queryKey: ['updateById', updateId],
