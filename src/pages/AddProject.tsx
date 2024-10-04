@@ -44,7 +44,6 @@ const AddProject = () => {
         brand: 0,
         priority: false
     };
-    const token = localStorage.getItem('authToken');
     const navigate = useNavigate();
     const setError = useErrorStore((state) => state.setError);
 
@@ -57,18 +56,15 @@ const AddProject = () => {
             queries: [
                 {
                     queryKey: ['levelOptions'],
-                    queryFn: () => getLevelOptions(token!),
-                    enabled: !!token,
+                    queryFn: () => getLevelOptions(),
                 },
                 {
                     queryKey: ['brandOptions'],
-                    queryFn: () => getBrandOptions(token!),
-                    enabled: !!token,
+                    queryFn: () => getBrandOptions(),
                 },
                 {
                     queryKey: ['techniqueOptions'],
-                    queryFn: () => getTechniquesOptions(token!),
-                    enabled: !!token,
+                    queryFn: () => getTechniquesOptions(),
                 },
             ],
         }) as [{ data: Option[] | undefined, isLoading: boolean, error: unknown },
@@ -103,7 +99,7 @@ const AddProject = () => {
             return;
         }
         try {
-            await createProject(token!, formValues);
+            await createProject(formValues);
             navigate('/feed');
         } catch (error) {
             if (error instanceof Error) {

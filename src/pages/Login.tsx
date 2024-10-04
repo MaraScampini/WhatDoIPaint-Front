@@ -34,7 +34,7 @@ const Login = () => {
             const token = await login(formValues);
             resetForm();
             localStorage.setItem('authToken', token);
-            await fetchUser(token, navigate);
+            await fetchUser();
             navigate('/feed');
         } catch (error) {
             if (error instanceof Error) {

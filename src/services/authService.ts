@@ -1,6 +1,6 @@
 import axios from "axios";
+import apiClient from "./apiClient";
 
-const API_URL = import.meta.env.VITE_API_PROD_URL;
 
 // LOGIN
 
@@ -11,7 +11,7 @@ interface LoginCredentials {
 
 export const login = async (credentials: LoginCredentials) => {
     try {
-        let res = await axios.post(`${API_URL}/api/login`, credentials);
+        let res = await apiClient.post(`/api/login`, credentials);
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -33,7 +33,7 @@ interface UserData {
 
 export const register = async (userData: UserData) => {
     try {
-        let res = await axios.post(`${API_URL}/auth/register`, userData);
+        let res = await apiClient.post(`/auth/register`, userData);
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -47,15 +47,10 @@ export const register = async (userData: UserData) => {
 
 // ME
 
-export const getMyInformation = async (token: string) => {
+export const getMyInformation = async () => {
     try {
-        const res = await axios.get(`${API_URL}/api/me`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+        const res = await apiClient.get(`/api/me`);
         localStorage.setItem('user', JSON.stringify(res.data));
-
         return res.data
     } catch (error) {
         if(axios.isAxiosError(error) && error.response){

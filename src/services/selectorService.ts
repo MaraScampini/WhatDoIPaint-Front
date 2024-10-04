@@ -1,16 +1,11 @@
 import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_PROD_URL;
-
-const headers = (token: string) => ({ headers: {
-    Authorization: `Bearer ${token}`
-}});
+import apiClient from "./apiClient";
 
 // LEVEL SELECTOR
 
-export const getLevelOptions = async (token: string) => {
+export const getLevelOptions = async () => {
     try {
-        let res = await axios.get(`${API_URL}/api/level/selector`, headers(token));
+        let res = await apiClient.get(`/api/level/selector`);
         return res.data;
     } catch (error) {
         if(axios.isAxiosError(error)) {
@@ -24,9 +19,9 @@ export const getLevelOptions = async (token: string) => {
 
 // BRAND SELECTOR
 
-export const getBrandOptions = async (token: string) => {
+export const getBrandOptions = async () => {
     try {
-        let res = await axios.get(`${API_URL}/api/brand/selector`, headers(token));
+        let res = await apiClient.get(`/api/brand/selector`);
         return res.data;
     } catch (error) {
         if(axios.isAxiosError(error)) {
@@ -40,9 +35,9 @@ export const getBrandOptions = async (token: string) => {
 
 // TECHNIQUES SELECTOR
 
-export const getTechniquesOptions = async (token: string) => {
+export const getTechniquesOptions = async () => {
     try {
-        let res = await axios.get(`${API_URL}/api/technique/selector`, headers(token));
+        let res = await apiClient.get(`/api/technique/selector`);
         return res.data;
     } catch (error) {
         if(axios.isAxiosError(error)) {

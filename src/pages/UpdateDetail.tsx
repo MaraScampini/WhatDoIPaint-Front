@@ -19,13 +19,12 @@ interface Update {
     elements: Array<string>
 }
 const UpdateDetail = () => {
-    const token = localStorage.getItem('authToken');
     const setError = useErrorStore((state) => state.setError);
     const { updateId } = useParams();
 
     const { data: updateInfo, error } = useQuery<Update>({
         queryKey: ['updateById', updateId],
-        queryFn: () => getUpdateInfo(token!, updateId!),
+        queryFn: () => getUpdateInfo(updateId!),
         enabled: !!updateId
     })
     if (error) setError(error.message);

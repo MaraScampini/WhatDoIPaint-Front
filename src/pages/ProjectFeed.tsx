@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import Tag from "../components/Tag";
 import Button from "../components/Button";
+import { AxiosError } from "axios";
 
 interface ProjectData {
     brand: string,
@@ -48,18 +49,23 @@ interface Update {
 }
 
 const ProjectFeed = () => {
-    const token = localStorage.getItem('authToken');
     const setError = useErrorStore((state) => state.setError);
     const { projectId } = useParams();
     const navigate = useNavigate();
 
     const { data: projectData, error } = useQuery<ProjectData>({
         queryKey: ['projectById', projectId],
-        queryFn: () => getProjectInfoById(token!, projectId!),
+        queryFn: () => getProjectInfoById(projectId!),
         enabled: !!projectId
     })
 
-    if (error) setError(error.message);
+    if (error) {
+        if(error instanceof AxiosError && error.status === 401) {
+            navigate('/login');
+        } else {
+            setError(error.message);
+        }
+    }
 
     const handleAddUpdate = () => {
         console.log('add update');
@@ -67,6 +73,11 @@ const ProjectFeed = () => {
 
     const handleGoToUpdate = (updateId: number) => {
         navigate(`/update/${updateId}`);
+    }
+
+    const handleOpenImage = (imageUrl: string) => {
+        console.log(imageUrl)
+        window.open(imageUrl, '_blank');
     }
 
     return (
@@ -140,7 +151,7 @@ const ProjectFeed = () => {
                             <div className="text-offWhite w-3/6 flex justify-center py-3">
                                 <div className="bg-darkGrey w-5/6 flex gap-5 flex-wrap p-3 rounded-md items-start justify-center">
                                     {projectData.gallery?.map((image, index) => (
-                                        <div key={index} className="h-[10rem] my-3 aspect-square bg-cover rounded-md"
+                                        <div onClick={() => handleOpenImage(image)} key={index} className="h-[10rem] my-3 aspect-square bg-cover rounded-md"
                                             style={{ backgroundImage: `url(${image})` }}
                                         >
                                         </div>

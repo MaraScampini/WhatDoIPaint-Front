@@ -1,18 +1,12 @@
 import axios from "axios";
+import apiClient from "./apiClient";
 
-const API_URL = import.meta.env.VITE_API_PROD_URL;
-
-const headers = (token: string) => ({
-    headers: {
-        Authorization: `Bearer ${token}`
-    }
-});
 
 // GET PROJECTS BY USER
 
-export const getProjectsByUser = async (token: string) => {
+export const getProjectsByUser = async () => {
     try {
-        let res = await axios.get(`${API_URL}/api/project`, headers(token));
+        let res = await apiClient.get(`/api/project`);
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -26,9 +20,9 @@ export const getProjectsByUser = async (token: string) => {
 
 // TOGGLE PROJECT PRIORITY
 
-export const togglePriority = async (token: string, userProjectId: number) => {
+export const togglePriority = async (userProjectId: number) => {
     try {
-        let res = await axios.put(`${API_URL}/api/project/toggle/${userProjectId}`, {}, headers(token));
+        let res = await apiClient.put(`/api/project/toggle/${userProjectId}`, {});
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -52,9 +46,9 @@ interface ProjectData {
     priority: boolean;
 }
 
-export const createProject = async (token: string, projectData: ProjectData) => {
+export const createProject = async (projectData: ProjectData) => {
     try {
-        let res = await axios.post(`${API_URL}/api/project`, projectData, headers(token));
+        let res = await apiClient.post(`api/project`, projectData);
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -68,9 +62,9 @@ export const createProject = async (token: string, projectData: ProjectData) => 
 
 // GET PROJECT INFO BY ID
 
-export const getProjectInfoById = async (token: string, projectId: string) => {
+export const getProjectInfoById = async (projectId: string) => {
 
-    let res = await axios.get(`${API_URL}/api/project/${projectId}`, headers(token));
+    let res = await apiClient.get(`/api/project/${projectId}`);
     return res.data;
 
 }

@@ -27,7 +27,7 @@ const Feed = () => {
         const loadUser = async () => {
             if (token && !user) {
                 try {
-                    await fetchUser(token, navigate);
+                    await fetchUser();
                 }
                 catch (error) {
                     navigate('/login');
@@ -39,7 +39,7 @@ const Feed = () => {
 
     const { data: userProjects = [], error, refetch } = useQuery<Project[]>({
         queryKey: ['projectsByUser', user?.username],
-        queryFn: () => getProjectsByUser(token!),
+        queryFn: () => getProjectsByUser(),
         enabled: !!user,
     })
 
@@ -55,9 +55,10 @@ const Feed = () => {
         console.log('Painted today!')
     }
 
-    const handleTogglePriority = async (userProjectId: number) => {
+    const handleTogglePriority = async (event: React.MouseEvent, userProjectId: number) => {
+        event.stopPropagation();
         try {
-            await togglePriority(token!, userProjectId);
+            await togglePriority(userProjectId);
             refetch();
         } catch (error) {
             if (error instanceof Error) {
@@ -83,7 +84,7 @@ const Feed = () => {
                             style={{ backgroundImage: `url(${project.image})` }}
                             onClick={() => handleGoToProject(project.id)}
                         >
-                            <button onClick={() => handleTogglePriority(project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
+                            <button onClick={(e) => handleTogglePriority(e, project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
                                 {project.priority ? (
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 transitition-all ease-in-out duration-300 hover:fill-none hover:stroke-lightTeal hover:stroke-1">
                                         <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clipRule="evenodd" />
