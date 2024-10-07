@@ -68,3 +68,14 @@ export const getProjectInfoById = async (projectId: string) => {
     return res.data;
 
 }
+
+// EDIT PROJECT
+
+interface ProjectInfo {
+    image?: string
+}
+
+export const editProject = async (projectInfo: ProjectInfo) => {
+    let res = await apiClient.put(`/api/project`, projectInfo);
+    return res.data;
+}

@@ -1,24 +1,31 @@
-import { getProjectInfoById } from "../services/projectService";
+import { editProject, getProjectInfoById } from "../services/projectService";
 import useErrorStore from "../store/useErrorStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Tag from "../components/Tag";
 import Button from "../components/Button";
 import { AxiosError } from "axios";
 import Loader from "../components/Loader";
 import { setInterceptor } from "../services/apiClient";
+import useFormValidation from "../hooks/useFormValidation";
 
 interface ProjectData {
+    id: number,
     brand: string,
     description: string,
     elements?: Array<Elements>,
-    gallery?: Array<string>,
+    gallery?: ProjectGallery,
     level: string,
     name: string,
     squads?: Array<Squads>,
     techniques?: Array<string>,
     updates?: Array<Update>
+}
+
+interface ProjectGallery {
+    cover: string,
+    images: Array<string>
 }
 
 interface LastUpdate {
@@ -50,20 +57,37 @@ interface Update {
     title: string
 }
 
+interface EditProjectInfo {
+    projectId: number,
+    image?: string
+}
+
 const ProjectFeed = () => {
     const setError = useErrorStore((state) => state.setError);
     const { projectId } = useParams();
     const navigate = useNavigate();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    let editProjectInfo: EditProjectInfo = {
+        projectId: 0,
+        image: ""
+    }
+    let { handleFileSelect, formValues } = useFormValidation(editProjectInfo);
+
 
     useEffect(() => {
         setInterceptor(navigate);
     }, [navigate])
 
-    const { data: projectData, error } = useQuery<ProjectData>({
+    const { data: projectData, error, refetch } = useQuery<ProjectData>({
         queryKey: ['projectById', projectId],
         queryFn: () => getProjectInfoById(projectId!),
         enabled: !!projectId
     })
+
+    useEffect(() => {
+        formValues.projectId = projectData?.id || 0;
+        console.log(formValues)
+    }, [formValues])
 
     if (error) {
         if (error instanceof AxiosError && error.status === 401) {
@@ -82,8 +106,23 @@ const ProjectFeed = () => {
     }
 
     const handleChangeCoverImage = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+            fileInputRef.current.value = "";
+        }
         console.log('change cover image');
     }
+
+    const handleSendFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleFileSelect('image')(e)
+        console.log(formValues)
+    }
+
+    useEffect(() => {
+        if (formValues.image) {
+            editProject(formValues).then(() => refetch());
+        }
+    }, [formValues])
 
     const handleGoToUpdate = (updateId: number) => {
         navigate(`/update/${updateId}`);
@@ -169,9 +208,16 @@ const ProjectFeed = () => {
                             {/* PROJECT GALLERY */}
                             <div className="text-offWhite w-3/6 flex h-2/3 justify-center py-3">
                                 <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
-                                    {projectData.gallery?.map((image, index) => (
+                                    {projectData.gallery?.cover ? (
+                                        <div onClick={() => handleOpenImage(projectData.gallery!.cover)}
+                                        className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
+                                        style={{ backgroundImage: `url(${projectData.gallery?.cover})` }}
+                                    >
+                                    </div>
+                                ) : (<div></div>)}
+                                    {projectData.gallery?.images.map((image, index) => (
                                         <div onClick={() => handleOpenImage(image)} key={index}
-                                            className={`aspect-square bg-cover rounded-md ${index === 0 ? 'col-span-2 row-span-2' : ''} hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
+                                            className={`aspect-square bg-cover rounded-md hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
                                             style={{ backgroundImage: `url(${image})` }}
                                         >
                                         </div>
@@ -182,7 +228,17 @@ const ProjectFeed = () => {
                         <div className="flex gap-x-3">
                             <Button buttonType="button" text="Add elements" onClick={handleAddElements} />
                             <Button buttonType="button" text="Add update" onClick={handleAddUpdate} />
-                            <Button buttonType="button" text="change cover image" onClick={handleChangeCoverImage} />
+                            <div>
+                                <Button buttonType="button" text="change cover image" onClick={handleChangeCoverImage} />
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleSendFile(e)}
+                                />
+                            </div>
+
                         </div>
                         {/* PROJECT UPDATES */}
                         <div className="w-full flex flex-col px-12 gap-y-5 py-3">
@@ -229,7 +285,7 @@ const ProjectFeed = () => {
                         </div>
                     </div>
                 ) : (
-                    <Loader/>
+                    <Loader />
                 )
             }
         </div>)

@@ -48,6 +48,7 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
     };
 
     const handleFile = (file: File, name: keyof T) => {
+        console.log(file)
         if (file && file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -58,6 +59,7 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
                 }));
             };
             reader.readAsDataURL(file);
+            console.log(formValues)
         }
     };
 
