@@ -113,11 +113,6 @@ const ProjectFeed = () => {
         console.log('change cover image');
     }
 
-    const handleSendFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-        handleFileSelect('image')(e)
-        console.log(formValues)
-    }
-
     useEffect(() => {
         if (formValues.image) {
             editProject(formValues).then(() => refetch());
@@ -235,7 +230,7 @@ const ProjectFeed = () => {
                                     accept="image/*"
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
-                                    onChange={(e) => handleSendFile(e)}
+                                    onChange={handleFileSelect('image')}
                                 />
                             </div>
 
