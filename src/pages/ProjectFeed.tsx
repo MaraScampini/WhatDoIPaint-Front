@@ -102,7 +102,7 @@ const ProjectFeed = () => {
     }
 
     const handleAddElements = () => {
-        console.log('add elements');
+        navigate(`/element/add/${projectData?.id}`);
     }
 
     const handleChangeCoverImage = () => {
@@ -110,7 +110,6 @@ const ProjectFeed = () => {
             fileInputRef.current.click();
             fileInputRef.current.value = "";
         }
-        console.log('change cover image');
     }
 
     useEffect(() => {
@@ -149,7 +148,7 @@ const ProjectFeed = () => {
                                         ))}
                                     </div>
                                 </div>
-                                {projectData.elements && projectData.elements?.length > 0 ? (
+                                {projectData.elements && projectData.elements?.length > 0 || projectData.squads && projectData.squads.length > 0 ? (
                                     <React.Fragment>
                                         {/* ELEMENTS TABLE */}
                                         <div className="flex flex-col mt-5 me-3 border-t border-x border-lightTeal rounded-md font-light">

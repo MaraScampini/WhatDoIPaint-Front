@@ -9,6 +9,7 @@ import AddProject from "./pages/AddProject"
 import HelpMeChoose from "./pages/HelpMeChoose"
 import ProjectFeed from "./pages/ProjectFeed"
 import UpdateDetail from "./pages/UpdateDetail"
+import AddElements from "./pages/AddElements"
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/help-me-choose" element={<HelpMeChoose />} />
           <Route path="/project/:projectId" element={<ProjectFeed />} />
           <Route path="/update/:updateId" element={<UpdateDetail />} />
+          <Route path="/element/add/:projectId" element={<AddElements />} />
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />
