@@ -14,7 +14,7 @@ import AddElements from "./pages/AddElements"
 function App() {
 
   return (
-    <div className="bg-darkBg min-h-screen flex flex-col">
+    <div className="bg-darkBg min-h-screen flex flex-col overflow-x-hidden">
       <BrowserRouter>
         <NavBar />
         <Routes>
