@@ -183,10 +183,10 @@ const AddElements = () => {
                                     {elementsToSend.statuses[category].map((line, index) => (
                                         <div className="flex gap-x-3 w-full" key={index}>
                                             <div className="w-5/6">
-                                                <Input type="text" name="name" value={elementsToSend.statuses[category][index].name} onChange={handleLineChange(category, index)} />
+                                                <Input type="text" name="name" value={line.name} onChange={handleLineChange(category, index)} />
                                             </div>
                                             <div className="w-1/6">
-                                                <Input type="number" name="amount" value={elementsToSend.statuses[category][index].amount} onChange={handleLineChange(category, index)} />
+                                                <Input type="number" name="amount" value={line.amount} onChange={handleLineChange(category, index)} />
                                             </div>
                                         </div>
                                     ))}
