@@ -209,7 +209,7 @@ const AddElements = () => {
                 <div className="w-1/3 bg-darkGrey p-5 text-xl uppercase flex flex-col mb-3 max-h-[500px]">
                     <div className="text-darkTeal text-3xl pb-3">SUMMARY</div>
                     {Object.entries(summary)
-                        .filter(([key, value]) => value > 0)
+                        .filter(([_, value]) => value > 0)
                         .map(([key, value]: [string, number]) => (
                             <div key={key} className="flex items-center gap-3">
                                 <div className="text-lightTeal">{value}</div>
