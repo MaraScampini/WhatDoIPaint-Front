@@ -130,7 +130,7 @@ const AddElements = () => {
                 },
             };
         });
-        
+
         if (name === 'amount') {
             const oldAmount = elementsToSend.statuses[category][index].amount;
             const newAmount = parseInt(value);
@@ -153,7 +153,15 @@ const AddElements = () => {
 
     return (
         <div className="flex flex-col px-10 text-offWhite font-display">
-            <h1 className="text-3xl font-semibold uppercase">Add elements</h1>
+
+            <div className="flex gap-x-3 items-center">
+                <div onClick={() => navigate(`/project/${projectId}`)} className="hover:text-lightTeal transition-all duration-100 hover:cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
+                </div>
+                <h1 className="text-3xl font-semibold uppercase">Add elements</h1>
+            </div>
             <div className="flex gap-x-5">
                 <div className="flex flex-col p-3 w-2/3 gap-y-5">
                     {categories.map((category) => (

@@ -135,7 +135,14 @@ const ProjectFeed = () => {
                         <div className="font-display flex w-full gap-x-3 px-12 pt-5 justify-between">
                             {/* PROJECT BASIC INFO */}
                             <div className="flex flex-col w-3/6">
-                                <div className="text-darkTeal text-3xl font-semibold">{projectData.name}</div>
+                                <div className="flex gap-x-3 items-center">
+                                    <div onClick={() => navigate(`/feed`)} className="hover:text-lightTeal transition-all duration-100 hover:cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                        </svg>
+                                    </div>
+                                    <div className="text-darkTeal text-3xl font-semibold">{projectData.name}</div>
+                                </div>
                                 <div className="text-offWhite text-justify pt-4 pe-5 w-2/3">{projectData.description}</div>
                                 <div className="uppercase text-xl text-lightTeal flex gap-x-12 pt-5">
                                     <p className="">{projectData.brand}</p>
@@ -204,11 +211,11 @@ const ProjectFeed = () => {
                                 <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
                                     {projectData.gallery?.cover ? (
                                         <div onClick={() => handleOpenImage(projectData.gallery!.cover)}
-                                        className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
-                                        style={{ backgroundImage: `url(${projectData.gallery?.cover})` }}
-                                    >
-                                    </div>
-                                ) : (<div></div>)}
+                                            className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
+                                            style={{ backgroundImage: `url(${projectData.gallery?.cover})` }}
+                                        >
+                                        </div>
+                                    ) : (<div></div>)}
                                     {projectData.gallery?.images.map((image, index) => (
                                         <div onClick={() => handleOpenImage(image)} key={index}
                                             className={`aspect-square bg-cover rounded-md hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
