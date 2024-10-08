@@ -130,13 +130,18 @@ const AddElements = () => {
                 },
             };
         });
-
+        
         if (name === 'amount') {
-            setSummary(prevState => ({
-                ...prevState,
-                [category]: prevState[category] + parseInt(value),
-            }))
-            setTotalMinis(totalMinis + parseInt(value))
+            const oldAmount = elementsToSend.statuses[category][index].amount;
+            const newAmount = parseInt(value);
+            const amountDifference = newAmount - parseInt(oldAmount);
+            setSummary(prevState => {
+                return {
+                    ...prevState,
+                    [category]: prevState[category] + amountDifference,
+                }
+            })
+            setTotalMinis(totalMinis + amountDifference)
         }
     };
 
@@ -196,14 +201,14 @@ const AddElements = () => {
                 <div className="w-1/3 bg-darkGrey p-5 text-xl uppercase flex flex-col">
                     <div className="text-darkTeal text-3xl mb-3">SUMMARY</div>
                     {Object.entries(summary)
-                    .filter(([key, value]) => value > 0)
-                    .map(([key, value]: [string, number]) => (
-                        <div key={key} className="flex items-center gap-3">
-                            <div className="text-lightTeal">{value}</div>
-                            <div className="text-sm">x</div>
-                            <div>{key === 'halfPainted' ? 'half-painted' : key}</div>
-                        </div>
-                    ))}
+                        .filter(([key, value]) => value > 0)
+                        .map(([key, value]: [string, number]) => (
+                            <div key={key} className="flex items-center gap-3">
+                                <div className="text-lightTeal">{value}</div>
+                                <div className="text-sm">x</div>
+                                <div>{key === 'halfPainted' ? 'half-painted' : key}</div>
+                            </div>
+                        ))}
                     <div className="text-center text-3xl text-lightTeal uppercase mt-auto">{totalMinis} miniatures</div>
                 </div>
             </div>
