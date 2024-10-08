@@ -19,6 +19,17 @@ interface OpenCategories {
     finished: boolean
 }
 
+interface Summary {
+    box: number,
+    sprue: number,
+    printed: number,
+    assembled: number,
+    primed: number,
+    halfPainted: number,
+    painted: number,
+    finished: number
+}
+
 interface Line {
     name: string,
     amount: string
@@ -55,16 +66,29 @@ const AddElements = () => {
     const [elementsToSend, setElementsToSend] = useState<ElementsToSend>({
         projectId: projectId!,
         statuses: {
-            box:  [{ name: "", amount: "0" }],
+            box: [{ name: "", amount: "0" }],
             sprue: [{ name: "", amount: "0" }],
-            printed:  [{ name: "", amount: "0" }],
+            printed: [{ name: "", amount: "0" }],
             assembled: [{ name: "", amount: "0" }],
-            primed:  [{ name: "", amount: "0" }],
+            primed: [{ name: "", amount: "0" }],
             halfPainted: [{ name: "", amount: "0" }],
             painted: [{ name: "", amount: "0" }],
             finished: [{ name: "", amount: "0" }]
         }
     });
+
+    const [summary, setSummary] = useState<Summary>({
+        box: 0,
+        sprue: 0,
+        printed: 0,
+        assembled: 0,
+        primed: 0,
+        halfPainted: 0,
+        painted: 0,
+        finished: 0
+    });
+
+    const [totalMinis, setTotalMinis] = useState<number>(0);
 
     const navigate = useNavigate();
 
@@ -72,7 +96,7 @@ const AddElements = () => {
 
     useEffect(() => {
         setInterceptor(navigate);
-    }, [navigate]) 
+    }, [navigate])
 
     const toggleCategory = (category: Category) => {
         setOpenCategories({
@@ -106,6 +130,14 @@ const AddElements = () => {
                 },
             };
         });
+
+        if (name === 'amount') {
+            setSummary(prevState => ({
+                ...prevState,
+                [category]: prevState[category] + parseInt(value),
+            }))
+            setTotalMinis(totalMinis + parseInt(value))
+        }
     };
 
     const handleSendElements = async () => {
@@ -161,7 +193,19 @@ const AddElements = () => {
                         <Button buttonType="button" text="add elements" onClick={handleSendElements} />
                     </div>
                 </div>
-                <div className="w-1/3 bg-green-400 h-screen">SUMMARY</div>
+                <div className="w-1/3 bg-darkGrey p-5 text-xl uppercase flex flex-col">
+                    <div className="text-darkTeal text-3xl mb-3">SUMMARY</div>
+                    {Object.entries(summary)
+                    .filter(([key, value]) => value > 0)
+                    .map(([key, value]: [string, number]) => (
+                        <div key={key} className="flex items-center gap-3">
+                            <div className="text-lightTeal">{value}</div>
+                            <div className="text-sm">x</div>
+                            <div>{key === 'halfPainted' ? 'half-painted' : key}</div>
+                        </div>
+                    ))}
+                    <div className="text-center text-3xl text-lightTeal uppercase mt-auto">{totalMinis} miniatures</div>
+                </div>
             </div>
         </div>
     )
