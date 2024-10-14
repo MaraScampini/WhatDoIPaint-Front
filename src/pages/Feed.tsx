@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '../store/useUserStore'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getProjectsByUser, togglePriority } from '../services/projectService';
 import useErrorStore from '../store/useErrorStore';
 import AddProjectButton from '../components/AddProjectButton';
 import { useQuery } from '@tanstack/react-query';
+import AddUpdatePopup from '../components/AddUpdatePopup';
 
 type Project = {
     id: number,
@@ -21,6 +22,8 @@ const Feed = () => {
     const fetchUser = useUserStore((state) => state.fetchUser);
     const setError = useErrorStore((state) => state.setError);
     const navigate = useNavigate();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -50,8 +53,9 @@ const Feed = () => {
         navigate('/');
     }
 
-    const handleAddUpdate = () => {
-        // TODO
+    const handleAddUpdate = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        setIsModalOpen(true);
         console.log('Painted today!')
     }
 
@@ -101,7 +105,7 @@ const Feed = () => {
                             <div className='absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-1/6 flex items-end justify-between rounded-xl'>
                                 <p className='text-offWhite font-display ps-3 pb-1' >{project.name}</p>
                                 <button
-                                    onClick={handleAddUpdate}
+                                    onClick={(e) => handleAddUpdate(e)}
                                     className='text-lightTeal pb-1 pe-1 group'>
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -123,6 +127,8 @@ const Feed = () => {
 
             <button className='text-offWhite' onClick={handleLogout}>Logout</button>
             <AddProjectButton />
+
+            <AddUpdatePopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddUpdatePopup>
         </div>
     )
 }
