@@ -2,10 +2,11 @@ import Button from "./Button";
 
 interface ModalProps {
     isOpen: boolean,
-    onClose: () => void
+    onClose: () => void,
+    projectId: number
 }
 
-const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) => {
 
     if (!isOpen) return null;
 

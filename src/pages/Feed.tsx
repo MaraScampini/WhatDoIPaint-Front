@@ -150,7 +150,7 @@ const Feed = () => {
 
             <button className='text-offWhite' onClick={handleLogout}>Logout</button>
             <AddProjectButton />
-            <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate}></AddUpdatePopup>
+            <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate} projectId={projectToUpdate}></AddUpdatePopup>
 
         </div >
     )
