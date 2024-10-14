@@ -4,7 +4,7 @@ import useFormValidation from "../hooks/useFormValidation"
 import { useRef } from "react"
 
 interface UpdateData {
-    projectId: number,
+    projectId: string,
     images?: Array<string>,
     title?: string,
     description?: string,
@@ -15,13 +15,8 @@ interface UpdateData {
 const AddUpdate = () => {
 
     const { projectId } = useParams();
-    const initialUpdateData = {
-        projectId: projectId,
-        images: [],
-        title: "",
-        description: "",
-        elements: [],
-        squads: []
+    const initialUpdateData : UpdateData = {
+        projectId: projectId!,
     };
 
     let { formValues, handleInputChange, handleMultipleImagesDrop, handleDragOver, handleMultipleFilesSelect, handleDeleteImage } = useFormValidation(initialUpdateData);
@@ -43,7 +38,7 @@ const AddUpdate = () => {
                         <Input
                             type="text"
                             name="title"
-                            value={formValues.title}
+                            value={formValues.title || ""}
                             onChange={handleInputChange}
                         />
 
@@ -52,7 +47,7 @@ const AddUpdate = () => {
                             <textarea
                                 className="font-display text-offWhite bg-darkGrey h-60 resize-none rounded-md px-5 py-3 mb-2 w-full"
                                 name="description"
-                                value={formValues.description}
+                                value={formValues.description || ""}
                                 onChange={handleInputChange}
                                 maxLength={1000}
                             />
@@ -65,7 +60,7 @@ const AddUpdate = () => {
                             onDrop={handleMultipleImagesDrop('images')}
                             onDragOver={handleDragOver}
                             onClick={handleClick}
-                        >{formValues.images.length > 0 ? (
+                        >{formValues?.images && formValues.images.length > 0 ? (
                             <div>
                                 <div onClick={(e) => handleDeleteImage(e, true)} className="absolute right-2 top-2 hover:text-offWhite">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 ">

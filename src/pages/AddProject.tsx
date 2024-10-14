@@ -114,7 +114,7 @@ const AddProject = () => {
             <form onSubmit={handleSubmitProject} className="w-full flex flex-col">
                 <div className='w-full flex flex-col'>
                     <div className='flex w-full justify-between'>
-                        <div className='flex flex-col w-2/4'>
+                        <div className='flex flex-col w-1/3'>
                             <div className="w-full">
                                 <Input
                                     type="text"
@@ -135,8 +135,7 @@ const AddProject = () => {
                                 />
                             </div>
                         </div>
-                        <div className='flex justify-center w-full h-80'>
-                            <div className='flex flex-col w-2/4'>
+                        <div className='flex flex-col w-2/5 me-10'>
                                 <p className="font-display text-lightTeal uppercase font-light">upload cover image</p>
                                 <div
                                     className="mt-4 p-6 border-dashed border-2 border-lightTeal rounded-lg cursor-pointer h-80 flex items-center justify-center text-lightTeal hover:border-solid hover:text-offWhite"
@@ -163,7 +162,6 @@ const AddProject = () => {
                                     style={{ display: 'none' }}
                                     onChange={handleFileSelect('image')}
                                 />
-                            </div>
 
                         </div>
                     </div>
