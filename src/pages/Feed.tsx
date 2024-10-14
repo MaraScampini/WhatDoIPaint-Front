@@ -6,13 +6,15 @@ import useErrorStore from '../store/useErrorStore';
 import AddProjectButton from '../components/AddProjectButton';
 import { useQuery } from '@tanstack/react-query';
 import AddUpdatePopup from '../components/AddUpdatePopup';
+import { createShortUpdate } from '../services/updateService';
 
 type Project = {
     id: number,
     name: string,
     image: string,
     priority: boolean,
-    userProjectId: number
+    userProjectId: number,
+    updatedToday: boolean
 };
 
 const Feed = () => {
@@ -24,6 +26,7 @@ const Feed = () => {
     const navigate = useNavigate();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [projectToUpdate, setProjectToUpdate] = useState(0);
 
 
     useEffect(() => {
@@ -53,10 +56,20 @@ const Feed = () => {
         navigate('/');
     }
 
-    const handleAddUpdate = (event: React.MouseEvent) => {
+    const handleAddUpdate = (event: React.MouseEvent, projectId: number) => {
         event.stopPropagation();
+        setProjectToUpdate(projectId);
         setIsModalOpen(true);
         console.log('Painted today!')
+    }
+
+    const sendShortUpdate = async () => {
+        // TODO
+        await createShortUpdate(projectToUpdate);
+        console.log('Short Update on project ' + projectToUpdate)
+        setIsModalOpen(false);
+        setProjectToUpdate(0);
+        refetch();
     }
 
     const handleTogglePriority = async (event: React.MouseEvent, userProjectId: number) => {
@@ -104,32 +117,42 @@ const Feed = () => {
 
                             <div className='absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-1/6 flex items-end justify-between rounded-xl'>
                                 <p className='text-offWhite font-display ps-3 pb-1' >{project.name}</p>
-                                <button
-                                    onClick={(e) => handleAddUpdate(e)}
-                                    className='text-lightTeal pb-1 pe-1 group'>
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth="1.5"
-                                        stroke="currentColor"
-                                        className="size-6 transition-colors duration-200 group-hover:text-offWhite">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
+                                {project.updatedToday ? (
+                                    <div className='text-lightTeal pb-1 pe-1'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
 
-                                </button>
+                                ) : (
+                                    <button
+                                        onClick={(e) => handleAddUpdate(e, project.id)}
+                                        className='text-lightTeal pb-1 pe-1 group'>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="1.5"
+                                            stroke="currentColor"
+                                            className="size-6 transition-colors duration-200 group-hover:text-offWhite">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </button>
+                                )}
+
                             </div>
                         </div>
                     ))}
                 </div>
             ) : (
                 <p>Add your first project to begin!</p>
-            )}
+            )
+            }
 
             <button className='text-offWhite' onClick={handleLogout}>Logout</button>
             <AddProjectButton />
+            <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate}></AddUpdatePopup>
 
-            <AddUpdatePopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddUpdatePopup>
-        </div>
+        </div >
     )
 }
 
