@@ -48,3 +48,33 @@ export const getTechniquesOptions = async () => {
         }
     }
 }
+
+// ELEMENTS AND SQUADS FROM PROJECT
+
+export const getElementsByProjectId = async (projectId: string) => {
+    try {
+        let res = await apiClient.get(`/api/project/elements/selector/${projectId}`);
+        return res.data;
+    } catch (error) {
+        if(axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
+
+export const getSquadsByProjectId = async (projectId: string) => {
+    try {
+        let res = await apiClient.get(`/api/project/squads/selector/${projectId}`);
+        return res.data;
+    } catch (error) {
+        if(axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}

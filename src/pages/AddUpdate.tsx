@@ -2,6 +2,11 @@ import { useParams } from "react-router-dom"
 import Input from "../components/Input"
 import useFormValidation from "../hooks/useFormValidation"
 import { useRef } from "react"
+import { useQueries } from "@tanstack/react-query"
+import { getElementsByProjectId, getSquadsByProjectId } from "../services/selectorService"
+import useErrorStore from "../store/useErrorStore"
+import Select from "react-select"
+import { reactSelectStyles } from "../utils/reactSelectStyles"
 
 interface UpdateData {
     projectId: string,
@@ -12,14 +17,43 @@ interface UpdateData {
     squads?: Array<number>
 }
 
+interface Option {
+    id: number,
+    label: string,
+    value: number
+}
+
 const AddUpdate = () => {
 
     const { projectId } = useParams();
-    const initialUpdateData : UpdateData = {
+    const setError = useErrorStore((state) => state.setError);
+    const initialUpdateData: UpdateData = {
         projectId: projectId!,
     };
 
-    let { formValues, handleInputChange, handleMultipleImagesDrop, handleDragOver, handleMultipleFilesSelect, handleDeleteImage } = useFormValidation(initialUpdateData);
+    const [{ data: elementOptions, error: errorElements },
+        { data: squadOptions, error: errorSquads }
+    ] = useQueries({
+        queries: [
+            {
+                queryKey: ['elementOptions'],
+                queryFn: () => getElementsByProjectId(projectId!),
+                enabled: !!projectId
+            },
+            {
+                queryKey: ['squadOptions'],
+                queryFn: () => getSquadsByProjectId(projectId!),
+                enabled: !!projectId
+            }
+        ]
+    }) as [{ data: Option[] | undefined, error: Error },
+            { data: Option[] | undefined, error: Error }]
+
+    [errorElements, errorSquads].map(error => {
+        setError(error?.message);
+    })
+
+    let { formValues, handleInputChange, handleMultipleImagesDrop, handleDragOver, handleMultipleFilesSelect, handleDeleteImage, handleMultiSelectChange } = useFormValidation(initialUpdateData);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -90,6 +124,35 @@ const AddUpdate = () => {
                             className="hidden"
                             onChange={handleMultipleFilesSelect('images')}
                         />
+                    </div>
+                </div>
+                <div className="flex flex-col gap-y-3 mb-5">
+                    <p className="font-display text-lightTeal font-light uppercase pb-1 text-xl">Choose elements to update</p>
+                    <div className="flex gap-x-5 w-2/3">
+                        <div className="w-1/2">
+                            <p className="font-display text-lightTeal font-light uppercase pb-1">Elements</p>
+                            <Select
+                                isMulti
+                                closeMenuOnSelect={false}
+                                options={elementOptions}
+                                onChange={handleMultiSelectChange('elements')}
+                                value={elementOptions?.filter(option => formValues.elements?.includes(option.id))}
+                                unstyled
+                                classNames={reactSelectStyles}
+                            />
+                        </div>
+                        <div className="w-1/2">
+                        <p className="font-display text-lightTeal font-light uppercase pb-1">Squads</p>
+                            <Select
+                                isMulti
+                                closeMenuOnSelect={false}
+                                options={squadOptions}
+                                onChange={handleMultiSelectChange('squads')}
+                                value={squadOptions?.filter(option => formValues.squads?.includes(option.id))}
+                                unstyled
+                                classNames={reactSelectStyles}
+                            />
+                        </div>
                     </div>
                 </div>
             </form>
