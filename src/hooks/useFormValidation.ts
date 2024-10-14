@@ -50,7 +50,7 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
     const handleFiles = (file: File | File[], name: keyof T, isMultiple: boolean = false) => {
         if (isMultiple && Array.isArray(file)) {
             const base64Array: string[] = [];
-            
+
             const promises = Array.from(file).map((singleFile) => {
                 return new Promise<void>((resolve) => {
                     const reader = new FileReader();
@@ -62,14 +62,14 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
                     reader.readAsDataURL(singleFile);
                 });
             });
-    
+
             Promise.all(promises).then(() => {
                 setFormValues(prevState => ({
                     ...prevState,
                     [name]: base64Array
                 }));
             });
-    
+
         } else if (file instanceof File && file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -85,17 +85,23 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
 
     const handleImageDrop = (name: keyof T) => (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
-        const files = event.dataTransfer.files; 
-        handleFiles(Array.from(files), name);
+        const file = event.dataTransfer.files[0];
+        handleFiles(file, name);
     };
 
+    const handleMultipleImagesDrop = (name: keyof T) => (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        handleFiles(Array.from(files!), name);
+    }
+
     const handleMultipleFilesSelect = (name: keyof T) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files; 
+        const files = event.target.files;
         handleFiles(Array.from(files!), name, true);
     };
 
     const handleFileSelect = (name: keyof T) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]; 
+        const file = event.target.files?.[0];
         handleFiles(file!, name);
     };
 
@@ -103,13 +109,20 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
         event.preventDefault();
     };
 
-    const handleDeleteImage = (event: React.MouseEvent<HTMLImageElement>) => {
+    const handleDeleteImage = (event: React.MouseEvent<HTMLImageElement | HTMLDivElement>, isMultiple: boolean = false) => {
         event.stopPropagation();
-        setFormValues(prevState => ({
-            ...prevState,
-            image: ""
-        }));
-        console.log('first')
+        isMultiple ? (
+            setFormValues(prevState => ({
+                ...prevState,
+                images: []
+            }))
+        ) : (
+            setFormValues(prevState => ({
+                ...prevState,
+                image: ""
+            }))
+        )
+
     };
 
     const handleOnBlurValidation = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -139,8 +152,9 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
         handleInputChange,
         handleOnBlurValidation,
         handleReactSelectChange,
-        handleMultiSelectChange, 
+        handleMultiSelectChange,
         handleImageDrop,
+        handleMultipleImagesDrop,
         handleDragOver,
         handleFileSelect,
         handleMultipleFilesSelect,

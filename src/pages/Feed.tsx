@@ -60,13 +60,10 @@ const Feed = () => {
         event.stopPropagation();
         setProjectToUpdate(projectId);
         setIsModalOpen(true);
-        console.log('Painted today!')
     }
 
     const sendShortUpdate = async () => {
-        // TODO
         await createShortUpdate(projectToUpdate);
-        console.log('Short Update on project ' + projectToUpdate)
         setIsModalOpen(false);
         setProjectToUpdate(0);
         refetch();

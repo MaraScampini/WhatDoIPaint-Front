@@ -209,13 +209,13 @@ const ProjectFeed = () => {
                             {/* PROJECT GALLERY */}
                             <div className="text-offWhite w-3/6 flex h-2/3 justify-center py-3">
                                 <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
-                                    {projectData.gallery?.cover ? (
+                                    {projectData.gallery?.cover && (
                                         <div onClick={() => handleOpenImage(projectData.gallery!.cover)}
                                             className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
                                             style={{ backgroundImage: `url(${projectData.gallery?.cover})` }}
                                         >
                                         </div>
-                                    ) : (<div></div>)}
+                                    )}
                                     {projectData.gallery?.images.map((image, index) => (
                                         <div onClick={() => handleOpenImage(image)} key={index}
                                             className={`aspect-square bg-cover rounded-md hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
