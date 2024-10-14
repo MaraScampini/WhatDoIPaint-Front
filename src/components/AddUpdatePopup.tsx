@@ -50,9 +50,9 @@ const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) =>
                     await createUpdate(formValues);
                     navigate(`/project/${projectId}`);
                 } catch (error) {
-                    if(error instanceof Error) {
+                    if (error instanceof Error) {
                         setError(error.message);
-                    } 
+                    }
                 } finally {
                     setIsLoading(false);
                 }
@@ -64,14 +64,14 @@ const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) =>
         return () => {
             setIsLoading(false);
         };
-        
+
     }, [formValues])
 
     return (
         <div className="bg-darkBg bg-opacity-75 fixed inset-0 flex items-center justify-center z-40">
             {isLoading ? (
                 <div>
-                    <Loader/>
+                    <Loader />
                 </div>
             ) : (
                 <div className="w-1/2 h-2/5 bg-darkGrey rounded-md
@@ -87,7 +87,9 @@ const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) =>
                     </div>
                     <p>congratulations</p>
                     <p className="mb-5">you are on a <span className="text-lightTeal">X</span> day streak!</p>
-                    <Button text="add more info" buttonType="button" />
+                    <div onClick={() => navigate(`/update/add/${projectId}`)}>
+                        <Button text="add more info" buttonType="button" />
+                    </div>
                     <div
                         onClick={handleClick}>
                         <Button text="add pictures" buttonType="button" />
