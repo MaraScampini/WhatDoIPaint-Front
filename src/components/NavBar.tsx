@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom"
 
 const NavBar = () => {
+    const navigate = useNavigate();
     return (
         <div className='w-screen px-5 py-3 flex items-center justify-between'>
-            <p className='font-display text-white'>
+            <p className='font-display text-white hover:cursor-pointer' onClick={() => navigate('/feed')}>
                 <span className='text-3xl'>W</span>
                 <span className='text-sm'>d</span>
                 <span className='text-3xl'>IP</span>
