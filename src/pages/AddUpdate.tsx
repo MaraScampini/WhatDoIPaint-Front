@@ -1,12 +1,14 @@
 import { useParams } from "react-router-dom"
 import Input from "../components/Input"
 import useFormValidation from "../hooks/useFormValidation"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useQueries } from "@tanstack/react-query"
 import { getElementsByProjectId, getSquadsByProjectId } from "../services/selectorService"
 import useErrorStore from "../store/useErrorStore"
 import Select from "react-select"
 import { reactSelectStyles } from "../utils/reactSelectStyles"
+import Button from "../components/Button"
+import SetStatusPopup from "../components/SetStatusPopup"
 
 interface UpdateData {
     projectId: string,
@@ -30,6 +32,8 @@ const AddUpdate = () => {
     const initialUpdateData: UpdateData = {
         projectId: projectId!,
     };
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [{ data: elementOptions, error: errorElements },
         { data: squadOptions, error: errorSquads }
@@ -63,6 +67,11 @@ const AddUpdate = () => {
             fileInputRef.current.value = "";
         }
     };
+
+    const handleClosePopup = () => {
+        setIsModalOpen(false);
+        console.log('popup closed')
+    }
 
     return (
         <div className="text-offWhite flex flex-col ms-10 ml-10">
@@ -128,7 +137,7 @@ const AddUpdate = () => {
                 </div>
                 <div className="flex flex-col gap-y-3 mb-5">
                     <p className="font-display text-lightTeal font-light uppercase pb-1 text-xl">Choose elements to update</p>
-                    <div className="flex gap-x-5 w-2/3">
+                    <div className="flex gap-x-5 w-full px-5 items-center">
                         <div className="w-1/2">
                             <p className="font-display text-lightTeal font-light uppercase pb-1">Elements</p>
                             <Select
@@ -142,7 +151,7 @@ const AddUpdate = () => {
                             />
                         </div>
                         <div className="w-1/2">
-                        <p className="font-display text-lightTeal font-light uppercase pb-1">Squads</p>
+                            <p className="font-display text-lightTeal font-light uppercase pb-1">Squads</p>
                             <Select
                                 isMulti
                                 closeMenuOnSelect={false}
@@ -153,10 +162,11 @@ const AddUpdate = () => {
                                 classNames={reactSelectStyles}
                             />
                         </div>
+                        <Button text='select status' buttonType="button" classNames="mt-3" onClick={() => setIsModalOpen(true)}/>
                     </div>
                 </div>
             </form>
-            <div className="bg-red-500"> TABLA </div>
+            <SetStatusPopup isOpen={isModalOpen} elements={{elements: formValues.elements, squads: formValues.squads}} onClose={handleClosePopup} />
         </div>
     )
 }
