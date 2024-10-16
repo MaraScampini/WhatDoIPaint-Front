@@ -21,6 +21,11 @@ type Project = {
     updatedToday: boolean
 };
 
+interface UserProjects {
+    total: number,
+    data: Array<Project>
+}
+
 interface SearchData {
     search: string,
     technique?: number,
@@ -44,6 +49,7 @@ const Feed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [projectToUpdate, setProjectToUpdate] = useState(0);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
     const initialSearchData: SearchData = {
         search: ""
     };
@@ -64,18 +70,47 @@ const Feed = () => {
         loadUser();
     }, [token, user, fetchUser, navigate]);
 
-    const { data: userProjects = [], error: projectsError, refetch } = useQuery<Project[]>({
+    const { data: userProjects = { total: 0, data: [] }, error: projectsError, refetch } = useQuery<UserProjects>({
         queryKey: ['projectsByUser', user?.username],
-        queryFn: () => getProjectsByUser(formValues),
+        queryFn: () => getProjectsByUser({ ...formValues, page: currentPage }),
         enabled: !!user,
     })
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
+            setCurrentPage(1);
             refetch();
         }, 1000);
         return () => clearTimeout(timeoutId);
     }, [formValues])
+
+    // PAGINATION
+    const [totalProjects, setTotalProjects] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const totalPages = Math.ceil(totalProjects / 10);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);
+        }
+    }
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prevPage => prevPage - 1);
+        }
+    }
+
+    useEffect(() => {
+        setTotalProjects(userProjects.total);
+    }, [userProjects])
+
+    useEffect(() => {
+        refetch();
+    }, [currentPage])
+
+
 
     const [{ data: levelOptions, error: levelError },
         { data: techniqueOptions, error: statusError }
@@ -100,11 +135,6 @@ const Feed = () => {
         }
     });
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    }
-
     const handleAddUpdate = (event: React.MouseEvent, projectId: number) => {
         event.stopPropagation();
         setProjectToUpdate(projectId);
@@ -115,7 +145,7 @@ const Feed = () => {
         await createShortUpdate(projectToUpdate);
         setIsModalOpen(false);
         setProjectToUpdate(0);
-        refetch();
+        setCurrentPage(1);
     }
 
     const handleTogglePriority = async (event: React.MouseEvent, userProjectId: number) => {
@@ -136,7 +166,7 @@ const Feed = () => {
     }
 
     return (
-        <div>
+        <div className='flex flex-col'>
             <div className='flex ps-10 mb-5 justify-center gap-x-3'>
                 <input
                     type="text"
@@ -180,63 +210,81 @@ const Feed = () => {
                 </div>
             )}
 
-            {userProjects.length > 0 ? (
-                <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap justify-center'>
-                    {userProjects.map((project) => (
-                        <div
-                            key={project.id}
-                            className='lg:w-1/6 md:w-1/4 sm:w-1/3 aspect-square bg-cover bg-center rounded-xl relative transition-all duration-300 ease-in-out hover:outline hover:outline-lightTeal hover:outline-1 hover:cursor-pointer'
-                            style={{ backgroundImage: `url(${project.image})` }}
-                            onClick={() => handleGoToProject(project.id)}
-                        >
-                            <button onClick={(e) => handleTogglePriority(e, project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
-                                {project.priority ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 transitition-all ease-in-out duration-300 hover:fill-none hover:stroke-lightTeal hover:stroke-1">
-                                        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clipRule="evenodd" />
-                                    </svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 transitition-all ease-in-out duration-300 hover:fill-current">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-                                    </svg>
-
-                                )}
-                            </button>
-
-
-                            <div className='absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-1/6 flex items-end justify-between rounded-xl'>
-                                <p className='text-offWhite font-display ps-3 pb-1' >{project.name}</p>
-                                {project.updatedToday ? (
-                                    <div className='text-lightTeal pb-2 pe-2'>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+            {userProjects.data.length > 0 ? (
+                <div>
+                    <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap justify-center'>
+                        {userProjects.data.map((project) => (
+                            <div
+                                key={project.id}
+                                className='lg:w-1/6 md:w-1/4 sm:w-1/3 aspect-square bg-cover bg-center rounded-xl relative transition-all duration-300 ease-in-out hover:outline hover:outline-lightTeal hover:outline-1 hover:cursor-pointer'
+                                style={{ backgroundImage: `url(${project.image})` }}
+                                onClick={() => handleGoToProject(project.id)}
+                            >
+                                <button onClick={(e) => handleTogglePriority(e, project.userProjectId)} className='text-lightTeal absolute right-3 top-3'>
+                                    {project.priority ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 transitition-all ease-in-out duration-300 hover:fill-none hover:stroke-lightTeal hover:stroke-1">
+                                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clipRule="evenodd" />
                                         </svg>
-                                    </div>
-
-                                ) : (
-                                    <button
-                                        onClick={(e) => handleAddUpdate(e, project.id)}
-                                        className='text-lightTeal pb-2 pe-2 group'>
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                            stroke="currentColor"
-                                            className="size-6 transition-colors duration-200 group-hover:text-offWhite">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    ) : (
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 transitition-all ease-in-out duration-300 hover:fill-current">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
                                         </svg>
-                                    </button>
-                                )}
 
+                                    )}
+                                </button>
+
+
+                                <div className='absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full h-1/6 flex items-end justify-between rounded-xl'>
+                                    <p className='text-offWhite font-display ps-3 pb-1' >{project.name}</p>
+                                    {project.updatedToday ? (
+                                        <div className='text-lightTeal pb-2 pe-2'>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                                                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+
+                                    ) : (
+                                        <button
+                                            onClick={(e) => handleAddUpdate(e, project.id)}
+                                            className='text-lightTeal pb-2 pe-2 group'>
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="1.5"
+                                                stroke="currentColor"
+                                                className="size-6 transition-colors duration-200 group-hover:text-offWhite">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                        </button>
+                                    )}
+
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                    <div className='flex justify-center gap-x-5 mt-5 fixed bottom-10 left-1/2 transform -translate-x-1/2'>
+                        <button
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                            className='text-offWhite'>
+                            Previous
+                        </button>
+                        <span className='text-offWhite'>
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                            className='text-offWhite'>
+                            Next
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <p>Add your first project to begin!</p>
             )
             }
 
-            <button className='text-offWhite' onClick={handleLogout}>Logout</button>
             <AddProjectButton />
             <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate} projectId={projectToUpdate}></AddUpdatePopup>
 

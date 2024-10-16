@@ -7,7 +7,8 @@ import apiClient from "./apiClient";
 interface Params {
     search: string,
     technique?: number,
-    level?: number
+    level?: number,
+    page: number
 }
 
 export const getProjectsByUser = async (params: Params) => {
