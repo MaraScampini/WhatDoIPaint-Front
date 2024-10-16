@@ -11,6 +11,8 @@ import useFormValidation from '../hooks/useFormValidation';
 import { getLevelOptions, getTechniquesOptions } from '../services/selectorService';
 import Select from 'react-select'
 import { reactSelectStyles } from '../utils/reactSelectStyles';
+import usePagination from '../hooks/usePagination';
+import Pagination from '../components/Pagination';
 
 type Project = {
     id: number,
@@ -41,7 +43,6 @@ interface Option {
 const Feed = () => {
     const token = localStorage.getItem('authToken');
     const user = useUserStore((state) => state.user);
-    const logout = useUserStore((state) => state.logout);
     const fetchUser = useUserStore((state) => state.fetchUser);
     const setError = useErrorStore((state) => state.setError);
     const navigate = useNavigate();
@@ -78,7 +79,7 @@ const Feed = () => {
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            setCurrentPage(1);
+            goToPage(1);
             refetch();
         }, 1000);
         return () => clearTimeout(timeoutId);
@@ -86,21 +87,8 @@ const Feed = () => {
 
     // PAGINATION
     const [totalProjects, setTotalProjects] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
 
-    const totalPages = Math.ceil(totalProjects / 10);
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(prevPage => prevPage + 1);
-        }
-    }
-
-    const handlePreviousPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(prevPage => prevPage - 1);
-        }
-    }
+    const { currentPage, totalPages, goToPage, handleNextPage, handlePreviousPage } = usePagination(totalProjects);
 
     useEffect(() => {
         setTotalProjects(userProjects.total);
@@ -109,8 +97,6 @@ const Feed = () => {
     useEffect(() => {
         refetch();
     }, [currentPage])
-
-
 
     const [{ data: levelOptions, error: levelError },
         { data: techniqueOptions, error: statusError }
@@ -145,7 +131,8 @@ const Feed = () => {
         await createShortUpdate(projectToUpdate);
         setIsModalOpen(false);
         setProjectToUpdate(0);
-        setCurrentPage(1);
+        refetch();
+        goToPage(1);
     }
 
     const handleTogglePriority = async (event: React.MouseEvent, userProjectId: number) => {
@@ -262,23 +249,16 @@ const Feed = () => {
                             </div>
                         ))}
                     </div>
-                    <div className='flex justify-center gap-x-5 mt-5 fixed bottom-10 left-1/2 transform -translate-x-1/2'>
-                        <button
-                            onClick={handlePreviousPage}
-                            disabled={currentPage === 1}
-                            className='text-offWhite'>
-                            Previous
-                        </button>
-                        <span className='text-offWhite'>
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages}
-                            className='text-offWhite'>
-                            Next
-                        </button>
+                    <div className="flex justify-center mt-5 fixed bottom-10 left-1/2 transform -translate-x-1/2">
+                        <Pagination
+                            handleNextPage={handleNextPage}
+                            handlePreviousPage={handlePreviousPage}
+                            currentPage={currentPage}
+                            goToPage={goToPage}
+                            totalPages={totalPages}
+                        />
                     </div>
+
                 </div>
             ) : (
                 <p>Add your first project to begin!</p>
