@@ -4,9 +4,13 @@ import { useEffect, useState } from 'react';
 import { getProjectsByUser, togglePriority } from '../services/projectService';
 import useErrorStore from '../store/useErrorStore';
 import AddProjectButton from '../components/AddProjectButton';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import AddUpdatePopup from '../components/AddUpdatePopup';
 import { createShortUpdate } from '../services/updateService';
+import useFormValidation from '../hooks/useFormValidation';
+import { getLevelOptions, getTechniquesOptions } from '../services/selectorService';
+import Select from 'react-select'
+import { reactSelectStyles } from '../utils/reactSelectStyles';
 
 type Project = {
     id: number,
@@ -16,6 +20,18 @@ type Project = {
     userProjectId: number,
     updatedToday: boolean
 };
+
+interface SearchData {
+    search: string,
+    technique?: number,
+    level?: number,
+    priority?: number
+}
+
+interface Option {
+    id: number,
+    label: string
+}
 
 const Feed = () => {
     const token = localStorage.getItem('authToken');
@@ -27,7 +43,10 @@ const Feed = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [projectToUpdate, setProjectToUpdate] = useState(0);
-
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    const initialSearchData: SearchData = {
+        search: ""
+    };
 
     useEffect(() => {
         const loadUser = async () => {
@@ -43,13 +62,34 @@ const Feed = () => {
         loadUser();
     }, [token, user, fetchUser, navigate]);
 
-    const { data: userProjects = [], error, refetch } = useQuery<Project[]>({
+    const { data: userProjects = [], error: projectsError, refetch } = useQuery<Project[]>({
         queryKey: ['projectsByUser', user?.username],
         queryFn: () => getProjectsByUser(),
         enabled: !!user,
     })
 
-    if (error) setError(error.message);
+    const [{ data: levelOptions, error: levelError },
+        { data: techniqueOptions, error: statusError }
+    ] = useQueries({
+        queries: [
+            {
+                queryKey: ['levelOptions'],
+                queryFn: () => getLevelOptions(),
+            },
+            {
+                queryKey: ['techniqueOptions'],
+                queryFn: () => getTechniquesOptions()
+            }
+        ]
+    }) as [{ data: Option[] | undefined, error: Error },
+            { data: Option[] | undefined, error: Error }]
+
+
+    [levelError, statusError, projectsError].map(error => {
+        if (error instanceof Error) {
+            setError(error?.message)
+        }
+    });
 
     const handleLogout = () => {
         logout();
@@ -81,16 +121,59 @@ const Feed = () => {
         }
     }
 
+    const { formValues, handleInputChange, handleReactSelectChange } = useFormValidation(initialSearchData)
+
     const handleGoToProject = (projectId: number) => {
         navigate(`/project/${projectId}`);
     }
 
     return (
         <div>
-            <p className='text-offWhite'>{user?.username}</p>
+            <div className='flex ps-10 mb-5 justify-center gap-x-3'>
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search"
+                    value={formValues?.search}
+                    onChange={handleInputChange}
+                    maxLength={100}
+                    className='w-1/2 h-10 rounded-md font-display px-3 text-lightTeal bg-darkGrey border border-lightTeal'
+                />
+                <div
+                    className='w-1/12 bg-darkTeal flex items-center justify-center rounded-md font-display text-offWhite uppercase text-lg hover:border hover:border-offWhite hover:cursor-pointer'
+                    onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                >Filters</div>
+            </div>
+
+            {isFiltersOpen && (
+                <div className='text-offWhite flex justify-center gap-x-3 mb-5'>
+                    <div className='w-1/4'>
+                        <Select
+                            options={levelOptions}
+                            onChange={handleReactSelectChange('level')}
+                            value={levelOptions?.find(option => option.id === formValues.level)}
+                            unstyled
+                            classNames={reactSelectStyles}
+                            isClearable
+                        />
+                    </div>
+
+                    <div className='w-1/4'>
+                        <Select
+                            options={techniqueOptions}
+                            onChange={handleReactSelectChange('technique')}
+                            value={techniqueOptions?.find(option => option.id === formValues.technique)}
+                            unstyled
+                            classNames={reactSelectStyles}
+                            isClearable
+                        />
+                    </div>
+
+                </div>
+            )}
 
             {userProjects.length > 0 ? (
-                <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap'>
+                <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap justify-center'>
                     {userProjects.map((project) => (
                         <div
                             key={project.id}

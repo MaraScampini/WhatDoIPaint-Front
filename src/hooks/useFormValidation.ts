@@ -7,7 +7,7 @@ type ValidationRules<T> = {
 
 interface Option {
     id: number;
-    value: number;
+    value?: number;
     label: string;
 }
 

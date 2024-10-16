@@ -78,3 +78,19 @@ export const getSquadsByProjectId = async (projectId: string) => {
         }
     }
 }
+
+// STATUS SELECTOR
+
+export const getStatusOptions = async () => {
+    try {
+        let res = await apiClient.get(`/api/status/selector`);
+        return res.data;
+    } catch (error) {
+        if(axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
