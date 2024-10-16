@@ -99,12 +99,12 @@ const RandomProjectPopup: React.FC<ModalProps> = ({ isOpen, onClose, projectData
                         <Button onClick={goToProject} text='Go to project' buttonType="button" />
                         <Button onClick={handleGetNewProject} text='Try again' buttonType="button" classNames="mt-[15px]" />
                     </div>
-                ) : (<div>No project meet those requirements</div>)
+                ) : (<div>No project meets those requirements</div>)
                 }
 
-                </div>
+            </div>
         </div>
-            )
+    )
 }
 
-            export default RandomProjectPopup
+export default RandomProjectPopup
