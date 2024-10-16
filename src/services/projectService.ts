@@ -95,7 +95,8 @@ interface RandomProjectParams {
     level?: number,
     technique?: number,
     brand?: number,
-    priority?: boolean
+    priority?: boolean,
+    banned?: string
 }
 
 export const getRandomProject = async (randomProjectParams: RandomProjectParams) => {

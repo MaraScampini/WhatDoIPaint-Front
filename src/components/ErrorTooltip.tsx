@@ -17,7 +17,7 @@ const ErrorTooltip = () => {
     if (!errorMessage) return null;
 
     return (
-        <div className='fixed bottom-4 left-4 bg-red-400 bg-opacity-70 text-darkBg px-4 py-2 rounded-md shadow-lg'>{errorMessage}</div>
+        <div className='fixed bottom-4 left-4 bg-red-400 bg-opacity-70 text-darkBg px-4 py-2 rounded-md shadow-lg z-50'>{errorMessage}</div>
     );
 }
 

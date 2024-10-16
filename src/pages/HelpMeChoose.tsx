@@ -141,7 +141,7 @@ const HelpMeChoose = () => {
           <div className="lg:text-9xl sm:text-8xl font-light rounded-full">?</div>
         </div>
       </div>
-      <RandomProjectPopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} projectData={randomProject}/>
+      <RandomProjectPopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} projectData={randomProject} projectParams={formValues}/>
     </div>
   )
 }
