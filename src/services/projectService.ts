@@ -88,3 +88,28 @@ export const editProject = async (projectInfo: ProjectInfo) => {
     let res = await apiClient.put(`/api/project`, projectInfo);
     return res.data;
 }
+
+// CHOOSE RANDOM PROJECT
+
+interface RandomProjectParams {
+    level?: number,
+    technique?: number,
+    brand?: number,
+    priority?: boolean
+}
+
+export const getRandomProject = async (randomProjectParams: RandomProjectParams) => {
+    try {
+        let res = await apiClient.get(`/api/project/wdip`, {
+            params: randomProjectParams
+        });
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
