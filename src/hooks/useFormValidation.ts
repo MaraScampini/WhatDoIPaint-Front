@@ -32,7 +32,7 @@ const useFormValidation = <T extends { [key: string]: any }>(initialState: T, va
     }
 
     const handleReactSelectChange = (name: keyof T) => (selectedOption: SingleValue<Option>) => {
-        const value = selectedOption ? selectedOption.id : 0;
+        const value = selectedOption ? selectedOption.id : null;
         setFormValues(prevState => ({
             ...prevState,
             [name]: value

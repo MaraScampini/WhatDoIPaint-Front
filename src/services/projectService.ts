@@ -4,9 +4,17 @@ import apiClient from "./apiClient";
 
 // GET PROJECTS BY USER
 
-export const getProjectsByUser = async () => {
+interface Params {
+    search: string,
+    technique?: number,
+    level?: number
+}
+
+export const getProjectsByUser = async (params: Params) => {
     try {
-        let res = await apiClient.get(`/api/project`);
+        let res = await apiClient.get(`/api/project`, {
+            params: params
+        });
         return res.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {

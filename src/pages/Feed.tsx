@@ -48,6 +48,8 @@ const Feed = () => {
         search: ""
     };
 
+    const { formValues, handleInputChange, handleReactSelectChange } = useFormValidation(initialSearchData)
+
     useEffect(() => {
         const loadUser = async () => {
             if (token && !user) {
@@ -64,9 +66,16 @@ const Feed = () => {
 
     const { data: userProjects = [], error: projectsError, refetch } = useQuery<Project[]>({
         queryKey: ['projectsByUser', user?.username],
-        queryFn: () => getProjectsByUser(),
+        queryFn: () => getProjectsByUser(formValues),
         enabled: !!user,
     })
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            refetch();
+        }, 1000);
+        return () => clearTimeout(timeoutId);
+    }, [formValues])
 
     const [{ data: levelOptions, error: levelError },
         { data: techniqueOptions, error: statusError }
@@ -121,7 +130,6 @@ const Feed = () => {
         }
     }
 
-    const { formValues, handleInputChange, handleReactSelectChange } = useFormValidation(initialSearchData)
 
     const handleGoToProject = (projectId: number) => {
         navigate(`/project/${projectId}`);
