@@ -7,6 +7,7 @@ import useErrorStore from "../store/useErrorStore";
 import { useState } from "react";
 import { getRandomProject } from "../services/projectService";
 import RandomProjectPopup from "../components/RandomProjectPopup";
+import { useNavigate } from "react-router-dom";
 
 interface Values {
   level?: number,
@@ -36,15 +37,15 @@ interface Date {
 const HelpMeChoose = () => {
 
   const initialValues: Values = {};
-  const setError = useErrorStore((state) => state.setError);
-  const [randomProject, setRandomProject] = useState<RandomProject>({
-    id: 0,
+  const emptyRandomProject = {id: 0,
     name: "",
     lastUpdate: {
       date: ""
-    }
-  })
+    }};
+  const setError = useErrorStore((state) => state.setError);
+  const [randomProject, setRandomProject] = useState<RandomProject>(emptyRandomProject)
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const [
     { data: levelOptions, error: levelError },
@@ -83,9 +84,22 @@ const HelpMeChoose = () => {
     setIsModalOpen(true);
   }
 
+  const handleClosePopup = () => {
+    setRandomProject(emptyRandomProject);
+    setIsModalOpen(false);
+  }
+
   return (
     <div className='text-offWhite font-display flex justify-center items-center gap-x-10 mt-20'>
       <div className="w-1/3">
+        <div className="flex gap-x-3 items-center mb-5">
+          <div onClick={() => navigate(`/feed`)} className="hover:text-lightTeal transition-all duration-100 hover:cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </div>
+          <div className="text-6xl uppercase text-lightTeal">What Do I Paint?</div>
+        </div>
         <div className="mb-5">Choose the parameters to pick your random project</div>
         <div className="mb-5 w-1/2">
           <p className="text-lightTeal uppercase font-light pb-1">Level</p>
@@ -141,7 +155,7 @@ const HelpMeChoose = () => {
           <div className="lg:text-9xl sm:text-8xl font-light rounded-full">?</div>
         </div>
       </div>
-      <RandomProjectPopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} projectData={randomProject} projectParams={formValues}/>
+      <RandomProjectPopup isOpen={isModalOpen} onClose={handleClosePopup} projectData={randomProject} projectParams={formValues} />
     </div>
   )
 }
