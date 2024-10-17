@@ -12,6 +12,7 @@ import UpdateDetail from "./pages/UpdateDetail"
 import AddElements from "./pages/AddElements"
 import AddUpdate from "./pages/AddUpdate"
 import ProjectGallery from "./pages/ProjectGallery"
+import UpdateGallery from "./pages/UpdateGallery"
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/element/add/:projectId" element={<AddElements />} />
           <Route path="/update/add/:projectId" element={<AddUpdate />} />
           <Route path="/project/gallery/:projectId" element={<ProjectGallery />} />
+          <Route path="/project/updates/:projectId" element={<UpdateGallery />} />
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />
