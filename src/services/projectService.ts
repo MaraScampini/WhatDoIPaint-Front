@@ -81,7 +81,12 @@ export const getProjectInfoById = async (projectId: string) => {
 // EDIT PROJECT
 
 interface ProjectInfo {
-    image?: string
+    image?: string,
+    name?: string,
+    description?: string,
+    level?: number,
+    brand?: number,
+    techniques?: number[]
 }
 
 export const editProject = async (projectInfo: ProjectInfo) => {

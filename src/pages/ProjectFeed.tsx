@@ -141,6 +141,11 @@ const ProjectFeed = () => {
         navigate(`/project/updates/${projectId}`)
     }
 
+    const handleClosePopup = () => {
+        setIsModalOpen(false);
+        refetch();
+    }
+
     return (
         <div className="text-offWhite">
             {
@@ -311,7 +316,7 @@ const ProjectFeed = () => {
                             </div>
                             <Button buttonType="button" text="See all updates" classNames="mb-5" onClick={handleOpenUpdateGallery} />
                         </div>
-                        <EditProjectPopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} projectId={projectData.id} projectData={{name: projectData.name, description: projectData.description}} />
+                        <EditProjectPopup isOpen={isModalOpen} onClose={handleClosePopup} projectId={projectData.id} projectData={{name: projectData.name, description: projectData.description}} />
                     </div>
                 ) : (
                     <Loader />
