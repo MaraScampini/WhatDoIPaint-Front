@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import useErrorStore from "../store/useErrorStore"
 import Tag from "../components/Tag"
 import Pagination from "../components/Pagination"
+import useProjectStore from "../store/useProjectStore"
 
 interface ProjectImages {
     total: number,
@@ -21,6 +22,7 @@ interface ImageInfo {
 const ProjectGallery = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
+    const project = useProjectStore((state) => state.project);
 
     const [totalImages, setTotalImages] = useState(0);
 
@@ -51,8 +53,16 @@ const ProjectGallery = () => {
     }
 
     return (
-        <div className="text-offWhite flex flex-col items-center justify-center">
-            <div className="bg-darkGrey w-5/6 grid grid-cols-4 mb-5">
+        <div className=" text-offWhite flex flex-col items-center justify-center min-h-screen relative">
+            <div className="flex gap-x-3 items-center mb-5 w-full justify-start ps-12">
+                <div onClick={() => navigate(`/project/${project!.id}`)} className="hover:text-lightTeal transition-all duration-100 hover:cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
+                </div>
+                <div className="font-display text-4xl uppercase text-lightTeal">{project!.name}</div>
+            </div>
+            <div className="bg-darkGrey w-5/6 grid grid-cols-4 grid-rows-2 mb-16">
                 {projectImages?.data.map((image, index) => (
                     <div key={index} className="p-2 flex justify-center items-center aspect-square relative inner-border hover:cursor-pointer rounded-md">
                         <div className="absolute top-3 right-3">
@@ -64,7 +74,7 @@ const ProjectGallery = () => {
                     </div>
                 ))}
             </div>
-            <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 mt-10">
+            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 mt-10">
                 <Pagination handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} currentPage={currentPage} goToPage={goToPage} totalPages={totalPages} />
             </div>
         </div>

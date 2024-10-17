@@ -9,6 +9,7 @@ import { AxiosError } from "axios";
 import Loader from "../components/Loader";
 import { setInterceptor } from "../services/apiClient";
 import useFormValidation from "../hooks/useFormValidation";
+import useProjectStore from "../store/useProjectStore";
 
 interface ProjectData {
     id: number,
@@ -67,6 +68,8 @@ const ProjectFeed = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const setProject = useProjectStore((state) => state.setProject);
+        
     let editProjectInfo: EditProjectInfo = {
         projectId: 0,
         image: ""
@@ -127,6 +130,7 @@ const ProjectFeed = () => {
     }
 
     const handleOpenGallery = () => {
+        setProject({id: projectData!.id, name: projectData!.name});
         navigate(`/project/gallery/${projectId}`);
     }
 
