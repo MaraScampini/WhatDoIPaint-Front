@@ -90,7 +90,6 @@ const EditProjectPopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId, pr
                     <Loader />
                 </div>
             ) : (
-
                 <div className="w-1/2 h-3/5 bg-darkBg border border-lightTeal rounded-md
                                 flex flex-col items-center justify-center 
                                  text-offWhite font-display uppercase 

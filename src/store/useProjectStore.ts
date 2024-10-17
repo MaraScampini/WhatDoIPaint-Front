@@ -13,6 +13,7 @@ interface ProjectState {
 const useProjectStore = create<ProjectState>((set) => ({
     project: null,
     setProject: (projectInfo) => {
+        localStorage.setItem('projectInfo', JSON.stringify(projectInfo));
         set({project: projectInfo})
     }
 }))
