@@ -2,7 +2,7 @@ import { editProject, getProjectInfoById } from "../services/projectService";
 import useErrorStore from "../store/useErrorStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Tag from "../components/Tag";
 import Button from "../components/Button";
 import { AxiosError } from "axios";
@@ -10,6 +10,7 @@ import Loader from "../components/Loader";
 import { setInterceptor } from "../services/apiClient";
 import useFormValidation from "../hooks/useFormValidation";
 import useProjectStore from "../store/useProjectStore";
+import EditProjectPopup from "../components/EditProjectPopup";
 
 interface ProjectData {
     id: number,
@@ -69,6 +70,7 @@ const ProjectFeed = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const setProject = useProjectStore((state) => state.setProject);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     let editProjectInfo: EditProjectInfo = {
         projectId: 0,
@@ -154,6 +156,13 @@ const ProjectFeed = () => {
                                         </svg>
                                     </div>
                                     <div className="text-darkTeal text-3xl font-semibold">{projectData.name}</div>
+                                    <div className="ps-5 h-full hover:cursor-pointer hover:text-lightTeal transition-colors duration-200 ease-in-out"
+                                    onClick={() => setIsModalOpen(true)}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                        </svg>
+                                    </div>
                                 </div>
                                 <div className="text-offWhite text-justify pt-4 pe-5 w-2/3">{projectData.description}</div>
                                 <div className="uppercase text-xl text-lightTeal flex gap-x-12 pt-5">
@@ -302,6 +311,7 @@ const ProjectFeed = () => {
                             </div>
                             <Button buttonType="button" text="See all updates" classNames="mb-5" onClick={handleOpenUpdateGallery} />
                         </div>
+                        <EditProjectPopup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} projectId={projectData.id} projectData={{name: projectData.name, description: projectData.description}} />
                     </div>
                 ) : (
                     <Loader />
