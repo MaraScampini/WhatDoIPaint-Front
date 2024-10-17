@@ -11,6 +11,7 @@ import ProjectFeed from "./pages/ProjectFeed"
 import UpdateDetail from "./pages/UpdateDetail"
 import AddElements from "./pages/AddElements"
 import AddUpdate from "./pages/AddUpdate"
+import ProjectGallery from "./pages/ProjectGallery"
 
 function App() {
 
@@ -28,7 +29,8 @@ function App() {
           <Route path="/project/:projectId" element={<ProjectFeed />} />
           <Route path="/update/:updateId" element={<UpdateDetail />} />
           <Route path="/element/add/:projectId" element={<AddElements />} />
-          <Route path="/update/add/:projectId" element={<AddUpdate/>}/>
+          <Route path="/update/add/:projectId" element={<AddUpdate />} />
+          <Route path="/project/gallery/:projectId" element={<ProjectGallery />} />
         </Routes>
       </BrowserRouter>
       <ErrorTooltip />

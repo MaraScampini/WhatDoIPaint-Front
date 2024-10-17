@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.inner-border:hover {
+    @apply shadow-[inset_0px_0px_0px_1px_#7DE2D1]
+}
+
+.inner-border-offWhite:hover {
+    @apply shadow-[inset_0px_0px_0px_1px_#FFFAFB]
+}

@@ -71,7 +71,7 @@ const Feed = () => {
         loadUser();
     }, [token, user, fetchUser, navigate]);
 
-    const { data: userProjects = { total: 0, data: [] }, error: projectsError, refetch } = useQuery<UserProjects>({
+    const { data: userProjects , error: projectsError, refetch } = useQuery<UserProjects>({
         queryKey: ['projectsByUser', user?.username],
         queryFn: () => getProjectsByUser({ ...formValues, page: currentPage }),
         enabled: !!user,
@@ -91,7 +91,11 @@ const Feed = () => {
     const { currentPage, totalPages, goToPage, handleNextPage, handlePreviousPage } = usePagination(totalProjects);
 
     useEffect(() => {
-        setTotalProjects(userProjects.total);
+        const setPaginationTotalProjects = () => {
+            userProjects && setTotalProjects(userProjects.total);
+        }
+
+        setPaginationTotalProjects();
     }, [userProjects])
 
     useEffect(() => {
@@ -165,7 +169,7 @@ const Feed = () => {
                     className='w-1/2 h-10 rounded-md font-display px-3 text-lightTeal bg-darkGrey border border-lightTeal'
                 />
                 <div
-                    className='w-1/12 bg-darkTeal flex items-center justify-center rounded-md font-display text-offWhite uppercase text-lg hover:border hover:border-offWhite hover:cursor-pointer'
+                    className='w-1/12 bg-darkTeal flex items-center justify-center rounded-md font-display text-offWhite uppercase text-lg  inner-border-offWhite hover:cursor-pointer'
                     onClick={() => setIsFiltersOpen(!isFiltersOpen)}
                 >Filters</div>
             </div>
@@ -197,7 +201,7 @@ const Feed = () => {
                 </div>
             )}
 
-            {userProjects.data.length > 0 ? (
+            {userProjects && userProjects.data.length > 0 ? (
                 <div>
                     <div className='flex ms-10 gap-x-5 gap-y-5 flex-wrap justify-center'>
                         {userProjects.data.map((project) => (

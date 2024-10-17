@@ -151,7 +151,7 @@ const HelpMeChoose = () => {
         onClick={handleGetRandomProject}
         className="w-1/3 flex justify-center text-lightTeal hover:text-offWhite transition-colors ease-in-out duration-200 hover:cursor-pointer relative"
       >
-        <div className="rounded-full border border-lightTeal hover:border-offWhite transition-colors ease-in-out duration-200 w-1/2 aspect-square flex items-center justify-center bg-darkGrey">
+        <div className="rounded-full border border-lightTeal inner-border-offWhite transition-colors ease-in-out duration-200 w-1/2 aspect-square flex items-center justify-center bg-darkGrey">
           <div className="lg:text-9xl sm:text-8xl font-light rounded-full">?</div>
         </div>
       </div>

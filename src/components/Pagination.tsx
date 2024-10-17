@@ -27,7 +27,7 @@ const Pagination: React.FC<Props> = ({handlePreviousPage, handleNextPage, curren
             {currentPage > 2 && (
                 <button
                     onClick={() => goToPage(1)}
-                    className="font-display text-offWhite px-2 py-1 rounded-md hover:border hover:border-lightTeal"
+                    className="font-display text-offWhite px-2 py-1 rounded-md inner-border"
                     aria-label="Page 1"
                 >
                     1
@@ -41,7 +41,7 @@ const Pagination: React.FC<Props> = ({handlePreviousPage, handleNextPage, curren
             {currentPage > 1 && (
                 <button
                     onClick={() => goToPage(currentPage - 1)}
-                    className="font-display text-offWhite px-2 py-1 rounded-md hover:border hover:border-lightTeal"
+                    className="font-display text-offWhite px-2 py-1 rounded-md inner-border"
                     aria-label={`Page ${currentPage - 1}`}
                 >
                     {currentPage - 1}
@@ -57,7 +57,7 @@ const Pagination: React.FC<Props> = ({handlePreviousPage, handleNextPage, curren
             {currentPage < totalPages && (
                 <button
                     onClick={() => goToPage(currentPage + 1)}
-                    className="font-display text-offWhite px-2 py-1 rounded-md hover:border hover:border-lightTeal"
+                    className="font-display text-offWhite px-2 py-1 rounded-md inner-border"
                     aria-label={`Page ${currentPage + 1}`}
                 >
                     {currentPage + 1}
@@ -71,7 +71,7 @@ const Pagination: React.FC<Props> = ({handlePreviousPage, handleNextPage, curren
             {currentPage < totalPages - 1 && (
                 <button
                     onClick={() => goToPage(totalPages)}
-                    className="font-display text-offWhite px-2 py-1 rounded-md hover:border hover:border-lightTeal"
+                    className="font-display text-offWhite px-2 py-1 rounded-md inner-border"
                     aria-label={`Page ${totalPages}`}
                 >
                     {totalPages}

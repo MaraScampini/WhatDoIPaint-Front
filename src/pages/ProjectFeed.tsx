@@ -123,8 +123,11 @@ const ProjectFeed = () => {
     }
 
     const handleOpenImage = (imageUrl: string) => {
-        console.log(imageUrl)
         window.open(imageUrl, '_blank');
+    }
+
+    const handleOpenGallery = () => {
+        navigate(`/project/gallery/${projectId}`);
     }
 
     return (
@@ -207,22 +210,25 @@ const ProjectFeed = () => {
 
                             </div>
                             {/* PROJECT GALLERY */}
-                            <div className="text-offWhite w-3/6 flex h-2/3 justify-center py-3">
-                                <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-md">
+                            <div className="text-offWhite w-3/6 flex flex-col h-2/3 items-center justify-center py-3">
+                                <div className="bg-darkGrey w-5/6 grid grid-cols-3 grid-rows-3 gap-5 p-3 rounded-t-md">
                                     {projectData.gallery?.cover && (
                                         <div onClick={() => handleOpenImage(projectData.gallery!.cover)}
-                                            className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
+                                            className={`aspect-square bg-cover rounded-md col-span-2 row-span-2 hover:cursor-pointer inner-border transition-all duration-100`}
                                             style={{ backgroundImage: `url(${projectData.gallery?.cover})` }}
                                         >
                                         </div>
                                     )}
                                     {projectData.gallery?.images.map((image, index) => (
                                         <div onClick={() => handleOpenImage(image)} key={index}
-                                            className={`aspect-square bg-cover rounded-md hover:cursor-pointer hover:border hover:border-lightTeal transition-all duration-100`}
+                                            className={`aspect-square bg-cover rounded-md hover:cursor-pointer inner-border transition-all duration-100`}
                                             style={{ backgroundImage: `url(${image})` }}
                                         >
                                         </div>
                                     ))}
+                                </div>
+                                <div className="bg-darkGrey w-5/6 flex justify-center pb-5 rounded-b-md">
+                                    <Button buttonType="button" text="See gallery" onClick={handleOpenGallery}/>
                                 </div>
                             </div>
                         </div>
@@ -247,7 +253,7 @@ const ProjectFeed = () => {
                                 const hasContent = update.title || update.description || (update.images && update.images.length > 0) || (update.elements && update.elements.length > 0);
 
                                 return hasContent ? (
-                                    <div key={updateIndex} onClick={() => handleGoToUpdate(update.id)} className="bg-darkGrey rounded-md p-5 font-display flex justify-between hover:border hover:border-lightTeal hover:cursor-pointer transition-all duration-100">
+                                    <div key={updateIndex} onClick={() => handleGoToUpdate(update.id)} className="bg-darkGrey rounded-md p-5 font-display flex justify-between inner-border hover:cursor-pointer transition-all duration-100">
                                         <div className="flex flex-col w-[90%]">
                                             <p className="text-2xl uppercase font-semibold">{update.title}</p>
                                             <p className="pt-3">{update.description}</p>

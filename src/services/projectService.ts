@@ -114,3 +114,26 @@ export const getRandomProject = async (randomProjectParams: RandomProjectParams)
         }
     }
 }
+
+// GET PROJECT GALLERY PAGINATED
+
+interface ProjectGalleryParams {
+    page: number,
+    limit: number
+}
+
+export const getProjectGallery = async (projectId: string, projectGalleryParams: ProjectGalleryParams) => {
+    try {
+        let res = await apiClient.get(`/api/project/gallery/${projectId}`, {
+            params: projectGalleryParams
+        });
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}

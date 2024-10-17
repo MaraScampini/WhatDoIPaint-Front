@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-const usePagination = (totalItems: number) => {
+const usePagination = (totalItems: number, limit:number = 10) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(totalItems / 10);
+    const totalPages = Math.ceil(totalItems / limit);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
