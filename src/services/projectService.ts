@@ -160,3 +160,19 @@ export const getProjectUpdateGallery = async (projectId: string, paginationParam
         }
     }
 }
+
+// GET CURRENT STREAK
+
+export const updateAndGetCurrentStreak = async () => {
+    try {
+        let res = await apiClient.post(`/api/streak`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}

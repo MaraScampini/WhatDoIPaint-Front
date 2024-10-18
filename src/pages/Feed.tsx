@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '../store/useUserStore'
 import { useEffect, useState } from 'react';
-import { getProjectsByUser, togglePriority } from '../services/projectService';
+import { getProjectsByUser, togglePriority, updateAndGetCurrentStreak } from '../services/projectService';
 import useErrorStore from '../store/useErrorStore';
 import AddProjectButton from '../components/AddProjectButton';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -51,6 +51,7 @@ const Feed = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [projectToUpdate, setProjectToUpdate] = useState(0);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    const [currentStreak, setCurrentStreak] = useState(0);
 
     const initialSearchData: SearchData = {
         search: ""
@@ -126,8 +127,10 @@ const Feed = () => {
         }
     });
 
-    const handleAddUpdate = (event: React.MouseEvent, projectId: number) => {
+    const handleAddUpdate = async (event: React.MouseEvent, projectId: number) => {
         event.stopPropagation();
+        let currentStreak = await updateAndGetCurrentStreak();
+        setCurrentStreak(currentStreak);
         setProjectToUpdate(projectId);
         setIsModalOpen(true);
     }
@@ -278,7 +281,7 @@ const Feed = () => {
                     }
 
                     <AddProjectButton />
-                    <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate} projectId={projectToUpdate}></AddUpdatePopup>
+                    <AddUpdatePopup isOpen={isModalOpen} onClose={sendShortUpdate} projectId={projectToUpdate} currentStreak={currentStreak}></AddUpdatePopup>
 
                 </div >)}
         </div >

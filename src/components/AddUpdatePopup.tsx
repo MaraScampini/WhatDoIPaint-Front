@@ -9,7 +9,8 @@ import useErrorStore from "../store/useErrorStore";
 interface ModalProps {
     isOpen: boolean,
     onClose: () => void,
-    projectId: number
+    projectId: number,
+    currentStreak: number
 }
 
 interface UpdateImagesData {
@@ -17,7 +18,7 @@ interface UpdateImagesData {
     images: Array<string>
 }
 
-const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) => {
+const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId, currentStreak }) => {
 
     if (!isOpen) return null;
 
@@ -86,7 +87,7 @@ const AddUpdatePopup: React.FC<ModalProps> = ({ isOpen, onClose, projectId }) =>
                         </svg>
                     </div>
                     <p>congratulations</p>
-                    <p className="mb-5">you are on a <span className="text-lightTeal">X</span> day streak!</p>
+                    <p className="mb-5">you are on a <span className="text-lightTeal">{currentStreak}</span> day streak!</p>
                     <div onClick={() => navigate(`/update/add/${projectId}`)}>
                         <Button text="add more info" buttonType="button" />
                     </div>
