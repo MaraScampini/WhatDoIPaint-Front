@@ -176,3 +176,19 @@ export const updateAndGetCurrentStreak = async () => {
         }
     }
 }
+
+// GET ELEMENTS AND SQUADS
+
+export const getElementsAndSquadsByProjectId = async (projectId: string) => {
+    try {
+        let res = await apiClient.get(`/api/project/fullelements/${projectId}`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}

@@ -3,19 +3,18 @@ import Input from "../components/Input"
 import useFormValidation from "../hooks/useFormValidation"
 import { useRef, useState } from "react"
 import { useQueries } from "@tanstack/react-query"
-import { getElementsByProjectId, getSquadsByProjectId } from "../services/selectorService"
+import { getElementsByProjectId, getSquadsByProjectId, getStatusOptions } from "../services/selectorService"
 import useErrorStore from "../store/useErrorStore"
-import Select from "react-select"
+import Select, { MultiValue, SingleValue } from "react-select"
 import { reactSelectStyles } from "../utils/reactSelectStyles"
-import Button from "../components/Button"
-import SetStatusPopup from "../components/SetStatusPopup"
+import { getElementsAndSquadsByProjectId } from "../services/projectService"
 
 interface UpdateData {
     projectId: string,
     images?: Array<string>,
     title?: string,
     description?: string,
-    elements?: Array<number>,
+    elements?: Array<number>
     squads?: Array<number>
 }
 
@@ -25,6 +24,44 @@ interface Option {
     value: number
 }
 
+interface ElementsAndSquads {
+    elements: Array<Element>,
+    squads: Array<Squad>
+}
+
+interface Element {
+    id: number,
+    name: string,
+    lastUpdate: {
+        date: string,
+        timezone_type: string,
+        timezone: string
+    },
+    status: string,
+    statusId: number
+}
+
+interface Squad {
+    id: number,
+    name: string,
+    lastUpdate: {
+        date: string,
+        timezone_type: string,
+        timezone: string
+    },
+    amount: number,
+    elements: Array<{
+        amount: number,
+        status: string,
+        statusId: number
+    }>
+}
+
+interface SelectedElement {
+    id: number,
+    status: number
+}
+
 const AddUpdate = () => {
 
     const { projectId } = useParams();
@@ -32,11 +69,13 @@ const AddUpdate = () => {
     const initialUpdateData: UpdateData = {
         projectId: projectId!,
     };
+    const [selectedElements, setSelectedElements] = useState<SelectedElement[]>([])
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [{ data: elementOptions, error: errorElements },
-        { data: squadOptions, error: errorSquads }
+        { data: squadOptions, error: errorSquads },
+        { data: projectData, error: errorProject },
+        { data: statusOptions, error: errorStatus }
     ] = useQueries({
         queries: [
             {
@@ -48,12 +87,23 @@ const AddUpdate = () => {
                 queryKey: ['squadOptions'],
                 queryFn: () => getSquadsByProjectId(projectId!),
                 enabled: !!projectId
+            },
+            {
+                queryKey: ['projectData' + projectId],
+                queryFn: () => getElementsAndSquadsByProjectId(projectId!),
+                enabled: !!projectId
+            },
+            {
+                queryKey: ['statusOptions'],
+                queryFn: () => getStatusOptions()
             }
         ]
     }) as [{ data: Option[] | undefined, error: Error },
+            { data: Option[] | undefined, error: Error },
+            { data: ElementsAndSquads | undefined, error: Error },
             { data: Option[] | undefined, error: Error }]
 
-    [errorElements, errorSquads].map(error => {
+    [errorElements, errorSquads, errorProject, errorStatus].map(error => {
         setError(error?.message);
     })
 
@@ -68,9 +118,28 @@ const AddUpdate = () => {
         }
     };
 
-    const handleClosePopup = () => {
-        setIsModalOpen(false);
-        console.log('popup closed')
+    const handleAddSelectedElements = (selectedOptions: MultiValue<{ value: number }>) => {
+        const values = selectedOptions
+            ? selectedOptions.map(option => ({
+                id: option.value,
+                status: projectData?.elements.find(element => element.id === option.value)!.statusId || 1
+            })) : [];
+
+        setSelectedElements(values);
+    }
+
+    const handleAddStatusToElement = (id: number) => (selectedOption: SingleValue<Option>) => {
+        const value = selectedOption ? selectedOption.id : 1;
+
+        setSelectedElements(prevElements =>
+            prevElements.map(element =>
+                element.id === id
+                    ? { ...element, status: value } // Update the status of the matching element
+                    : element // Keep other elements unchanged
+            )
+        );
+
+
     }
 
     return (
@@ -144,8 +213,8 @@ const AddUpdate = () => {
                                 isMulti
                                 closeMenuOnSelect={false}
                                 options={elementOptions}
-                                onChange={handleMultiSelectChange('elements')}
-                                value={elementOptions?.filter(option => formValues.elements?.includes(option.id))}
+                                onChange={handleAddSelectedElements}
+                                value={elementOptions?.filter(option => selectedElements.some(element => element.id === option.id))}
                                 unstyled
                                 classNames={reactSelectStyles}
                             />
@@ -162,11 +231,26 @@ const AddUpdate = () => {
                                 classNames={reactSelectStyles}
                             />
                         </div>
-                        <Button text='select status' buttonType="button" classNames="mt-3" onClick={() => setIsModalOpen(true)}/>
                     </div>
                 </div>
             </form>
-            <SetStatusPopup isOpen={isModalOpen} elements={{elements: formValues.elements, squads: formValues.squads}} onClose={handleClosePopup} />
+
+            <div className="flex flex-col gap-y-5">
+                {projectData?.elements.filter(option => selectedElements.some(element => element.id === option.id)).map((element, elementIndex) => (
+                    <div key={elementIndex} className="w-1/2 flex items-center justify-between bg-darkGrey rounded-md p-5">
+                        <div>{element.name}</div>
+                        <div className="w-1/3">
+                            <Select
+                                options={statusOptions}
+                                onChange={handleAddStatusToElement(element.id)}
+                                value={statusOptions?.filter(option => option.id === selectedElements.find(selectedElement => selectedElement.id === element.id)?.status)}
+                                unstyled
+                                classNames={reactSelectStyles}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
