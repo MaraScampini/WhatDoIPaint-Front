@@ -343,7 +343,7 @@ const AddUpdate = () => {
                     ))}
 
                 </div>
-                <div className="grid grid-cols-2 gap-5 w-2/3 px-5 mb-12">
+                <div className="grid grid-cols-2 gap-5 w-2/3 px-5 mb-12 font-display">
                     {projectData?.squads.filter(option => selectedSquads.some(element => element.id === option.id)).map((squad, squadIndex) => (
                         <div key={squadIndex} >
                             <div className={`w-full flex items-center justify-between bg-darkGrey p-5 ${isSquadOpen.find(openSquad => openSquad.id === squad.id)?.open ? 'rounded-t-md' : 'rounded-md'}`}>
@@ -366,17 +366,24 @@ const AddUpdate = () => {
                                 </div>
                             </div>
                             {isSquadOpen.find(openSquad => openSquad.id === squad.id)?.open && (
-                                <div className="w-full grid grid-cols-3 gap-y-3 items-center justify-between bg-darkGrey rounded-b-md p-5">
-                                    {statusOptions?.map(status => (
-                                        <div className="">
-                                            <Input
-                                                type="number"
-                                                name={status.label}
-                                                value={selectedSquads.find(selectedSquad => selectedSquad.id === squad.id)?.elements.find(el => el.statusId === status.id)?.amount || 0}
-                                                onChange={(e) => handleAddStatusToSquad(squad.id, e)}
-                                            />
-                                        </div>
-                                    ))}
+                                <div className="flex flex-col justify-center">
+                                    <div className="bg-darkGrey flex justify-center gap-x-5 items-center">
+                                        <p className="text-lightTeal font-light">TOTAL UNITS IN SQUAD: </p>
+                                        <p className="text-xl">{squad.amount}</p>
+                                    </div>
+                                    <div className="w-full grid grid-cols-3 gap-3 items-center justify-between bg-darkGrey rounded-b-md p-5">
+                                        {statusOptions?.map(status => (
+                                            <div className="">
+                                                <Input
+                                                    type="number"
+                                                    name={status.label}
+                                                    value={selectedSquads.find(selectedSquad => selectedSquad.id === squad.id)?.elements.find(el => el.statusId === status.id)?.amount || 0}
+                                                    onChange={(e) => handleAddStatusToSquad(squad.id, e)}
+                                                    classNames="border border-offWhite w-[100px]"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
