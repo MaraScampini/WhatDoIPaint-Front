@@ -36,12 +36,26 @@ export const createShortUpdate = async (projectId: number) => {
 // CREATE NEW UPDATE
 
 interface UpdateData {
-    projectId: number,
+    projectId: string | number,
     images?: Array<string>,
     title?: string,
     description?: string,
-    elements?: Array<number>,
-    squads?: Array<number>
+    elements?: Array<SelectedElement>,
+    squads?: Array<SelectedSquad>
+}
+
+interface SelectedElement {
+    id: number,
+    status: number
+}
+
+interface SelectedSquad {
+    id: number,
+    elements: Array<{
+        amount: number,
+        status: string,
+        statusId: number
+    }>
 }
 
 export const createUpdate = async (updateData: UpdateData) => {

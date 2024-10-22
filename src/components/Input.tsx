@@ -2,7 +2,7 @@ interface InputProps {
     type: string,
     name: string,
     placeholder?: string,
-    value: string,
+    value: string | number,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     maxLength?: number,
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void

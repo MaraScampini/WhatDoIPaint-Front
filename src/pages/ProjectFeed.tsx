@@ -103,7 +103,7 @@ const ProjectFeed = () => {
     }
 
     const handleAddUpdate = () => {
-        console.log('add update');
+        navigate(`/update/add/${projectId}`);
     }
 
     const handleAddElements = () => {

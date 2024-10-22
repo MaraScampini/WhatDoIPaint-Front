@@ -1,21 +1,23 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Input from "../components/Input"
 import useFormValidation from "../hooks/useFormValidation"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useQueries } from "@tanstack/react-query"
 import { getElementsByProjectId, getSquadsByProjectId, getStatusOptions } from "../services/selectorService"
 import useErrorStore from "../store/useErrorStore"
 import Select, { MultiValue, SingleValue } from "react-select"
 import { reactSelectStyles } from "../utils/reactSelectStyles"
 import { getElementsAndSquadsByProjectId } from "../services/projectService"
+import Button from "../components/Button"
+import { createUpdate } from "../services/updateService"
 
 interface UpdateData {
     projectId: string,
     images?: Array<string>,
     title?: string,
     description?: string,
-    elements?: Array<number>
-    squads?: Array<number>
+    elements?: Array<SelectedElement>
+    squads?: Array<SelectedSquad>
 }
 
 interface Option {
@@ -62,15 +64,32 @@ interface SelectedElement {
     status: number
 }
 
+interface SelectedSquad {
+    id: number,
+    elements: Array<{
+        amount: number,
+        status: string,
+        statusId: number
+    }>
+}
+
+interface SquadsOpen {
+    id: number,
+    open: boolean
+}
+
 const AddUpdate = () => {
 
     const { projectId } = useParams();
     const setError = useErrorStore((state) => state.setError);
+    const navigate = useNavigate();
     const initialUpdateData: UpdateData = {
         projectId: projectId!,
     };
-    const [selectedElements, setSelectedElements] = useState<SelectedElement[]>([])
-
+    const [selectedElements, setSelectedElements] = useState<SelectedElement[]>([]);
+    const [selectedSquads, setSelectedSquads] = useState<SelectedSquad[]>([]);
+    const [isSquadOpen, setIsSquadOpen] = useState<SquadsOpen[]>([]);
+    const [objectToSend, setObjectToSend] = useState<UpdateData>(initialUpdateData);
 
     const [{ data: elementOptions, error: errorElements },
         { data: squadOptions, error: errorSquads },
@@ -107,7 +126,7 @@ const AddUpdate = () => {
         setError(error?.message);
     })
 
-    let { formValues, handleInputChange, handleMultipleImagesDrop, handleDragOver, handleMultipleFilesSelect, handleDeleteImage, handleMultiSelectChange } = useFormValidation(initialUpdateData);
+    let { formValues, handleInputChange, handleMultipleImagesDrop, handleDragOver, handleMultipleFilesSelect, handleDeleteImage } = useFormValidation(initialUpdateData);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -134,13 +153,80 @@ const AddUpdate = () => {
         setSelectedElements(prevElements =>
             prevElements.map(element =>
                 element.id === id
-                    ? { ...element, status: value } // Update the status of the matching element
-                    : element // Keep other elements unchanged
+                    ? { ...element, status: value }
+                    : element
+            )
+        );
+    }
+
+    const handleAddSelectedSquads = (selectedOptions: MultiValue<{ value: number }>) => {
+        const values = selectedOptions
+            ? selectedOptions.map(option => ({
+                id: option.value,
+                elements: projectData?.squads.find(squad => squad.id === option.value)!.elements || []
+            })) : [];
+
+        setSelectedSquads(values);
+
+        setIsSquadOpen(prevState => [
+            ...prevState,
+            ...selectedOptions.map(option => ({
+                id: option.value,
+                open: false
+            }))
+        ]
+        )
+    }
+
+    const handleToggleSquadOpen = (id: number) => {
+        setIsSquadOpen(prevState =>
+            prevState.map(squad =>
+                squad.id === id
+                    ? { ...squad, open: !squad.open }
+                    : squad
+            )
+        );
+    }
+
+
+    const handleAddStatusToSquad = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const statusId = statusOptions?.find(option => option.label === name)!.id;
+        setSelectedSquads(prevSquads =>
+            prevSquads.map(squad =>
+                squad.id === id
+                    ? {
+                        ...squad,
+                        elements: squad.elements.some(el => el.statusId === statusId)
+                            ? squad.elements.map(el =>
+                                el.statusId === statusId
+                                    ? { ...el, amount: parseInt(value) }
+                                    : el
+                            )
+                            : [...squad.elements, { statusId: statusId!, status: name, amount: parseInt(value) }]
+                    }
+                    : squad
             )
         );
 
-
     }
+
+
+    useEffect(() => {
+        setObjectToSend({
+            ...formValues,
+            elements: selectedElements,
+            squads: selectedSquads,
+        });
+
+    }, [formValues, selectedElements, selectedSquads]);
+
+    const handleSendUpdate = async () => {
+        await createUpdate(objectToSend);
+
+        navigate(`/project/${projectId}`);
+    }
+
 
     return (
         <div className="text-offWhite flex flex-col ms-10 ml-10">
@@ -202,9 +288,12 @@ const AddUpdate = () => {
                             className="hidden"
                             onChange={handleMultipleFilesSelect('images')}
                         />
+                        <div className="flex justify-center">
+                            <Button text="Send" buttonType="button" onClick={handleSendUpdate} />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-y-3 mb-5">
+                <div className="flex flex-col gap-y-3 mb-5 w-2/3">
                     <p className="font-display text-lightTeal font-light uppercase pb-1 text-xl">Choose elements to update</p>
                     <div className="flex gap-x-5 w-full px-5 items-center">
                         <div className="w-1/2">
@@ -225,8 +314,8 @@ const AddUpdate = () => {
                                 isMulti
                                 closeMenuOnSelect={false}
                                 options={squadOptions}
-                                onChange={handleMultiSelectChange('squads')}
-                                value={squadOptions?.filter(option => formValues.squads?.includes(option.id))}
+                                onChange={handleAddSelectedSquads}
+                                value={squadOptions?.filter(option => selectedSquads.some(squad => squad.id === option.id))}
                                 unstyled
                                 classNames={reactSelectStyles}
                             />
@@ -235,23 +324,66 @@ const AddUpdate = () => {
                 </div>
             </form>
 
-            <div className="flex flex-col gap-y-5">
-                {projectData?.elements.filter(option => selectedElements.some(element => element.id === option.id)).map((element, elementIndex) => (
-                    <div key={elementIndex} className="w-1/2 flex items-center justify-between bg-darkGrey rounded-md p-5">
-                        <div>{element.name}</div>
-                        <div className="w-1/3">
-                            <Select
-                                options={statusOptions}
-                                onChange={handleAddStatusToElement(element.id)}
-                                value={statusOptions?.filter(option => option.id === selectedElements.find(selectedElement => selectedElement.id === element.id)?.status)}
-                                unstyled
-                                classNames={reactSelectStyles}
-                            />
+            <div className="flex w-full px-5 mb-12">
+                <div className="flex flex-col gap-y-5 w-1/3 px-5 mb-12">
+                    {projectData?.elements.filter(option => selectedElements.some(element => element.id === option.id)).map((element, elementIndex) => (
+                        <div key={elementIndex} className="w-full flex items-center justify-between bg-darkGrey rounded-md p-5">
+                            <div>{element.name}</div>
+                            <div className="w-1/3">
+                                <Select
+                                    options={statusOptions}
+                                    onChange={handleAddStatusToElement(element.id)}
+                                    value={statusOptions?.filter(option => option.id === selectedElements.find(selectedElement => selectedElement.id === element.id)?.status)}
+                                    unstyled
+                                    classNames={reactSelectStyles}
+                                    menuPlacement="auto"
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+                    ))}
+
+                </div>
+                <div className="grid grid-cols-2 gap-5 w-2/3 px-5 mb-12">
+                    {projectData?.squads.filter(option => selectedSquads.some(element => element.id === option.id)).map((squad, squadIndex) => (
+                        <div key={squadIndex} >
+                            <div className={`w-full flex items-center justify-between bg-darkGrey p-5 ${isSquadOpen.find(openSquad => openSquad.id === squad.id)?.open ? 'rounded-t-md' : 'rounded-md'}`}>
+                                <div>{squad.name}</div>
+                                <div onClick={() => handleToggleSquadOpen(squad.id)} className="hover:text-lightTeal hover:cursor-pointer">
+                                    {isSquadOpen.find(openSquad => openSquad.id === squad.id)?.open ? (
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+                                            </svg>
+
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            {isSquadOpen.find(openSquad => openSquad.id === squad.id)?.open && (
+                                <div className="w-full grid grid-cols-3 gap-y-3 items-center justify-between bg-darkGrey rounded-b-md p-5">
+                                    {statusOptions?.map(status => (
+                                        <div className="">
+                                            <Input
+                                                type="number"
+                                                name={status.label}
+                                                value={selectedSquads.find(selectedSquad => selectedSquad.id === squad.id)?.elements.find(el => el.statusId === status.id)?.amount || 0}
+                                                onChange={(e) => handleAddStatusToSquad(squad.id, e)}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div >
+        </div >
     )
 }
 
