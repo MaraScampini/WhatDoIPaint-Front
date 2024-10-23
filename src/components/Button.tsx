@@ -2,15 +2,16 @@ interface ButtonProps {
     buttonType: 'button' | 'submit' | 'reset',
     text: string,
     onClick?: () => void,
-    classNames?: string 
+    classNames?: string,
+    disabled?: boolean
 }
 
-const Button = ({ buttonType, text, onClick, classNames = "" }: ButtonProps) => {
+const Button = ({ buttonType, text, onClick, classNames = "", disabled = false}: ButtonProps) => {
     return (
         <button 
         type={buttonType} 
-        onClick={onClick}
-        className={"w-60 h-12 bg-darkTeal rounded-md flex items-center justify-center mt-8 cursor-pointer inner-border transitions-all duration-200 ease-in-out " + classNames}>
+        onClick={!disabled ? onClick : undefined}
+        className={`w-60 h-12 bg-darkTeal rounded-md flex items-center justify-center mt-8 ${disabled ? ('bg-gray-500 cursor-default') : ('inner-border cursor-pointer')} transitions-all duration-200 ease-in-out ${classNames}`}>
             <p className="font-display text-xl uppercase text-offWhite font-semibold">
                 {text}
             </p>

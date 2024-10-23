@@ -192,3 +192,35 @@ export const getElementsAndSquadsByProjectId = async (projectId: string) => {
         }
     }
 }
+
+// TOGGLE ARCHIVE PROJECT
+
+export const toggleArchivedProject = async (projectId: string) => {
+    try {
+        let res = await apiClient.put(`/api/project/archived/${projectId}`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
+
+// MARK PROJECT AS FINISHED
+
+export const markProjectAsFinished = async (projectId: number) => {
+    try {
+        let res = await apiClient.put(`/api/project/finished/${projectId}`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
