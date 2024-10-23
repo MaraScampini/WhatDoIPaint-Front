@@ -33,7 +33,9 @@ interface SearchData {
     search: string,
     technique?: number,
     level?: number,
-    priority?: number
+    priority?: number,
+    finished?: boolean,
+    archived?: boolean
 }
 
 interface Option {
@@ -205,6 +207,32 @@ const Feed = () => {
                                         classNames={reactSelectStyles}
                                         isClearable
                                     />
+                                </div>
+
+                                <div>
+                                    <label className="flex items-center space-x-3">
+                                        <input
+                                            type="checkbox"
+                                            name="finished"
+                                            checked={formValues.finished}
+                                            onChange={handleInputChange}
+                                            className="form-checkbox h-5 w-5 text-teal"
+                                        />
+                                        <span className="font-display text-lightTeal uppercase font-light">Finished</span>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label className="flex items-center space-x-3">
+                                        <input
+                                            type="checkbox"
+                                            name="archived"
+                                            checked={formValues.archived}
+                                            onChange={handleInputChange}
+                                            className="form-checkbox h-5 w-5 text-teal"
+                                        />
+                                        <span className="font-display text-lightTeal uppercase font-light">archived</span>
+                                    </label>
                                 </div>
 
                             </div>
