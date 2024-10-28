@@ -229,7 +229,15 @@ const AddUpdate = () => {
 
 
     return (
-        <div className="text-offWhite flex flex-col ms-10 ml-10">
+        <div className="font-display text-offWhite flex flex-col ms-10 ml-10">
+            <div className="flex gap-x-3 items-center">
+                <div onClick={() => navigate(`/project/${projectId}`)} className="hover:text-lightTeal transition-all duration-100 hover:cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                    </svg>
+                </div>
+                <div className="text-darkTeal text-3xl font-semibold">Add update</div>
+            </div>
             <form>
                 <div className="flex w-full justify-between">
                     <div className="w-1/3">
