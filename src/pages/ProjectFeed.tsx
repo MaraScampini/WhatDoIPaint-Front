@@ -12,6 +12,7 @@ import useFormValidation from "../hooks/useFormValidation";
 import useProjectStore from "../store/useProjectStore";
 import EditProjectPopup from "../components/EditProjectPopup";
 import FinishProjectPopup from "../components/FinishProjectPopup";
+import { deleteElement, deleteSquad } from "../services/elementService";
 
 interface ProjectData {
     id: number,
@@ -40,6 +41,7 @@ interface LastUpdate {
 }
 
 interface Elements {
+    id: number,
     name: string,
     lastUpdate: LastUpdate,
     status: string
@@ -160,6 +162,16 @@ const ProjectFeed = () => {
         refetch();
     }
 
+    const handleDeleteSquadOrElement = async (id: number, type: string) => {
+        if(type === 'squad') {
+            await deleteSquad(id);
+        } else if (type === 'element') {
+            await deleteElement(id);
+        }
+
+        refetch();
+    }
+
     return (
         <div className="text-offWhite">
             {
@@ -244,19 +256,24 @@ const ProjectFeed = () => {
                                             </div>
 
                                             {/* BODY */}
-                                            <div className="flex flex-col font-normal">
+                                            <div className="flex flex-col font-normal relative">
                                                 {projectData.elements?.map((element, index) => (
-                                                    <div key={index} className="flex border-b border-lightTeal py-2">
+                                                    <div key={index} className="flex border-b border-lightTeal py-2 relative group">
                                                         <div className="text-left w-2/6 px-3 border-lightTeal">{element.name}</div>
                                                         <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(element.lastUpdate.date).toLocaleDateString('es-ES')}</div>
                                                         <div className="w-1/6 px-3 border-l border-lightTeal">{element.status}</div>
                                                         <div className="w-1/6 px-3 border-l border-lightTeal">1</div>
+                                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-lightTeal" onClick={() => handleDeleteSquadOrElement(element.id, 'element')}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                            </svg>
+                                                        </div>
                                                     </div>
                                                 ))}
 
                                                 {projectData.squads?.map((squad, squadIndex) => (
                                                     <React.Fragment key={squadIndex}>
-                                                        <div className="flex border-b border-lightTeal py-2">
+                                                        <div className="flex border-b border-lightTeal py-2 relative group">
                                                             <div className="text-left w-2/6 px-3 border-lightTeal flex justify-between">
                                                                 {squad.name}
                                                                 <Tag text="squad" />
@@ -264,6 +281,11 @@ const ProjectFeed = () => {
                                                             <div className="w-2/6 px-3 border-l border-lightTeal">{new Date(squad.lastUpdate.date).toLocaleDateString('es-ES')}</div>
                                                             <div className="w-1/6 px-3 border-l border-lightTeal">...</div>
                                                             <div className="w-1/6 px-3 border-l border-lightTeal">{squad.amount}</div>
+                                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-lightTeal" onClick={() => handleDeleteSquadOrElement(squad.id, 'squad')}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                                </svg>
+                                                            </div>
                                                         </div>
                                                         {squad.elements?.map((element, elementIndex) => (
                                                             <div key={elementIndex} className={`flex border-lightTeal border-b py-2 ${squadIndex === projectData.squads!.length - 1 && elementIndex === squad.elements.length - 1 ? 'rounded-b-md' : ''}`}>

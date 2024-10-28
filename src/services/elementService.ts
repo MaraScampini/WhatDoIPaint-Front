@@ -37,3 +37,33 @@ export const addElementsToProject = async (elementData: ElementsToSend) => {
         }
     }
 }
+
+// DELETE ELEMENT OR SQUAD
+
+export const deleteElement = async (elementId: number) => {
+    try {
+        let res = await apiClient.delete(`/api/element/${elementId}`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
+
+export const deleteSquad = async (squadId: number) => {
+    try {
+        let res = await apiClient.delete(`/api/squad/${squadId}`);
+        return res.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data;
+            throw new Error(errorMessage);
+        } else {
+            throw new Error('Unknown error');
+        }
+    }
+}
